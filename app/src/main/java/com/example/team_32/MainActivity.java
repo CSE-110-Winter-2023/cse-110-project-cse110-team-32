@@ -2,7 +2,12 @@ package com.example.team_32;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Matrix;
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
+import android.view.animation.RotateAnimation;
+import android.view.animation.Transformation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,11 +18,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         orientationService = OrientationService.singleton(this);
-
-        TextView orTxt = findViewById(R.id.orienText);
+        ImageView comFace = findViewById(R.id.compassFace);
 
         orientationService.getOrientation().observe(this, ori -> {
-            orTxt.setText(Float.toString(ori));
+            float degrees = (float) Math.toDegrees((double) ori);
+            comFace.setRotation(degrees);
         });
     }
 

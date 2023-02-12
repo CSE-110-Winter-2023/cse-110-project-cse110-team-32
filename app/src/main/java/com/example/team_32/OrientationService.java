@@ -20,7 +20,6 @@ public class OrientationService implements SensorEventListener {
     //Angle between the app and the north
     // values between (-pi, pi), when 0 -> points to north pole
     private MutableLiveData<Float> azimuth;
-
     /**
      * Constructor
      * @param activity Context is needed to initiate the sensor manager
