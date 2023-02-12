@@ -32,7 +32,7 @@ public class OrientationService implements SensorEventListener {
         this.regSensorListeners();
     }
 
-    private void regSensorListeners() {
+    public void regSensorListeners() {
         sensorManager.registerListener(this,
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
