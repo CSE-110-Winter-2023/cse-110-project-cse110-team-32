@@ -63,7 +63,10 @@ public class LocationService implements LocationListener {
         this.locationValue = mockDataSource;
     }
 
-    public MutableLiveData<Pair<Double, Double>> getLocMan(){
-        return this.locationValue;
+    protected void finalize()
+    {
+        instance = null;
+        activity = null;
+        locationValue =null;
     }
 }
