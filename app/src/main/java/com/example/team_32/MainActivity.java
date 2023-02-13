@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         });
         orientationService = OrientationService.singleton(this);
         ImageView comFace = findViewById(R.id.compassFace);
+        TextView orin = findViewById(R.id.orienText);
 
         orientationService.getOrientation().
 
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         TextView longitude = (TextView) findViewById(R.id.longitude);
         TextView latitude = (TextView) findViewById(R.id.latitude);
         return Utilities.parseDouble(longitude.getText().toString()).isPresent() && Utilities.parseDouble(latitude.getText().toString()).isPresent();
+
     }
 
     @Override
