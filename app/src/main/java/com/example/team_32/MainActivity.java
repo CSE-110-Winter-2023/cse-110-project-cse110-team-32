@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
         orientationService.getOrientation().observe(this, ori -> {
             float degrees = (float) Math.toDegrees((double) ori);
-            comFace.setRotation(degrees);
+            comFace.setRotation(-degrees);
         });
     }
 
