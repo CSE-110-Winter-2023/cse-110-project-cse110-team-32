@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
             orientationService.getOrientation().observe(this, ori -> {
                 float degrees = (float) Math.toDegrees((double) ori);
-                Double angle = angleBetweenLocations(loc, loc2, degrees);
+                Double angle = -angleBetweenLocations(loc, loc2, -degrees);
                 textView.setText(Double.toString(angle));
 
 //                textView.setText(Double.toString(degrees));
