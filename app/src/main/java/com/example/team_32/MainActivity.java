@@ -1,6 +1,7 @@
 package com.example.team_32;
 
 import static com.example.team_32.Angle.angleBetweenLocations;
+import static com.example.team_32.R.id.longti;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -14,7 +15,9 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.animation.RotateAnimation;
 import android.view.animation.Transformation;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import android.Manifest;
@@ -49,6 +52,16 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.serviceTextView);
         ImageView home = findViewById(R.id.home);
 
+        Spinner spinner = findViewById(R.id.spinner_languages);
+        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
+
+        String text = spinner.getSelectedItem().toString();
+
+        TextView textView3 = (TextView) findViewById(R.id.label);
+        textView3.setText(text);
+
         locationService.getLocation().observe(this, loc -> {
 //            textView.setText(Double.toString(loc.first) + " , " +
 //                    Double.toString(loc.second));
@@ -69,9 +82,18 @@ public class MainActivity extends AppCompatActivity {
                 ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) home.getLayoutParams();
                 layoutParams.circleAngle = angle.floatValue();
                 home.setLayoutParams(layoutParams);
+
+
+                ConstraintLayout.LayoutParams layoutParams1 = (ConstraintLayout.LayoutParams) textView3.getLayoutParams();
+                layoutParams1.circleAngle = angle.floatValue();
+                textView3.setLayoutParams(layoutParams);
             });
 
         });
+
+
+//        TextView textView2 = (TextView) findViewById(R.id.longti);
+//        textView2.setText(text);
 
         // get the other location -> have a box to enter it ?
         // add an arrow or a home icon to that points to the angel found.
