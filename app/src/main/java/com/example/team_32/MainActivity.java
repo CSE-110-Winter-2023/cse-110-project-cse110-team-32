@@ -19,9 +19,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         orientationService = OrientationService.singleton(this);
         ImageView comFace = findViewById(R.id.compassFace);
+        TextView orin = findViewById(R.id.orienText);
 
         orientationService.getOrientation().observe(this, ori -> {
             float degrees = (float) Math.toDegrees((double) ori);
+            orin.setText(Float.toString(ori));
             comFace.setRotation(-degrees);
         });
     }

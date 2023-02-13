@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -41,13 +42,16 @@ public class OrientationService implements SensorEventListener {
     }
 
     public static OrientationService singleton (Activity activity){
+        if (activity == null && instance == null)
+            throw new IllegalStateException("An activity must be passed");
+
         if (instance == null)
             instance = new OrientationService(activity);
         return instance;
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
+    public void onSensorChanged(@NonNull SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             accMeterReading = event.values;
         }
@@ -82,7 +86,7 @@ public class OrientationService implements SensorEventListener {
     }
 
     public void unregSensors(){
-        sensorManager.unregisterListener(this);
+        this.sensorManager.unregisterListener(this);
     }
 
     public LiveData<Float> getOrientation(){return this.azimuth;}
@@ -90,5 +94,10 @@ public class OrientationService implements SensorEventListener {
     public void setMockOrientation(MutableLiveData<Float> mockSource){
         unregSensors();
         this.azimuth = mockSource;
+    }
+
+
+    public MutableLiveData<Float> getMock (){
+        return this.azimuth;
     }
 }
