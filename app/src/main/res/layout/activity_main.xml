@@ -10,15 +10,16 @@
         android:id="@+id/compassCons"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="1"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
 
         <ImageView
             android:id="@+id/compassFace"
@@ -31,9 +32,31 @@
             android:rotation="0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/compass_face" />
+
+        <ImageView
+            android:id="@+id/home"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintCircle="@+id/compassFace"
+            app:layout_constraintCircleAngle="0"
+            app:layout_constraintCircleRadius="155dp"
+            app:srcCompat="@drawable/home" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/some_id"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/next"-->
+        <!--            android:drawableRight="@drawable/arrow_right"-->
+        <!--            android:clickable="true"-->
+        <!--            android:focusable="true"-->
+        <!--            android:background="?android:selectableItemBackground"-->
+        <!--            />-->
 
         <TextView
             android:id="@+id/orienText"

@@ -1,8 +1,9 @@
 package com.example.team_32;
 
-import static com.example.team_32.Utilities.angleBetweenLocations;
+import static com.example.team_32.Angle.angleBetweenLocations;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.app.Activity;
@@ -46,13 +47,30 @@ public class MainActivity extends AppCompatActivity {
         locationService= LocationService.singleton(this);
 
         TextView textView = (TextView) findViewById(R.id.serviceTextView);
+        ImageView home = findViewById(R.id.home);
 
         locationService.getLocation().observe(this, loc -> {
-            textView.setText(Double.toString(loc.first) + " , " +
-                    Double.toString(loc.second));
+//            textView.setText(Double.toString(loc.first) + " , " +
+//                    Double.toString(loc.second));
+
             Pair<Double, Double> loc2 = new Pair<>(21.3891, 39.8579);
-            Double angle = angleBetweenLocations(loc, loc2, 0);
-            textView.setText(Double.toString(angle));
+
+//            Double angle = angleBetweenLocations(loc, loc2, 270);
+//            textView.setText(Double.toString(angle));
+
+
+            orientationService.getOrientation().observe(this, ori -> {
+                float degrees = (float) Math.toDegrees((double) ori);
+                Double angle = angleBetweenLocations(loc, loc2, degrees);
+                textView.setText(Double.toString(angle));
+
+//                textView.setText(Double.toString(degrees));
+
+                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) home.getLayoutParams();
+                layoutParams.circleAngle = angle.floatValue();
+                home.setLayoutParams(layoutParams);
+            });
+
         });
 
         // get the other location -> have a box to enter it ?
