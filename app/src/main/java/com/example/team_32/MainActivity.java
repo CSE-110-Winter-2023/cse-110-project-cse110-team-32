@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
                 observe(this, loc ->
 
                 {
+
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
                     textView.setText(text);
-
                     orientationService.getOrientation().observe(this, ori -> {
                         float degrees = (float) Math.toDegrees((double) ori);
                         TextView longitude = (TextView) findViewById(R.id.longitude);
@@ -96,19 +96,12 @@ public class MainActivity extends AppCompatActivity {
                         Pair<Double, Double> loc2 = new Pair<>(Utilities.parseDouble(latitude.getText().toString()).get(), Utilities.parseDouble(longitude.getText().toString()).get());
                         Double angle = angleBetweenLocations(loc, loc2, degrees);
                         textView.setText(Double.toString(angle));
-
                         ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) home.getLayoutParams();
                         layoutParams.circleAngle = angle.floatValue();
                         home.setLayoutParams(layoutParams);
                     });
 
                 });
-
-        // get the other location -> have a box to enter it ?
-        // add an arrow or a home icon to that points to the angel found.
-        // add some testing
-        // a label next to the icon
-        // store anything like lab 4
         loadHomeLocation();
     }
 
