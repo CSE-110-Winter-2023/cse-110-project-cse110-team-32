@@ -1,5 +1,7 @@
 package com.example.team_32;
 
+import static com.example.team_32.Utilities.angleBetweenLocations;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -8,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.animation.RotateAnimation;
 import android.view.animation.Transformation;
 import android.widget.ImageView;
@@ -35,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
             comFace.setRotation(-degrees);
         });
 
-
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
@@ -49,7 +50,16 @@ public class MainActivity extends AppCompatActivity {
         locationService.getLocation().observe(this, loc -> {
             textView.setText(Double.toString(loc.first) + " , " +
                     Double.toString(loc.second));
+            Pair<Double, Double> loc2 = new Pair<>(21.3891, 39.8579);
+            Double angle = angleBetweenLocations(loc, loc2, 0);
+            textView.setText(Double.toString(angle));
         });
+
+        // get the other location -> have a box to enter it ?
+        // add an arrow or a home icon to that points to the angel found.
+        // add some testing
+        // a label next to the icon
+        // store anything like lab 4
 
     }
 
