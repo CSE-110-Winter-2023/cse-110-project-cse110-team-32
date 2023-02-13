@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">team_32</string>
+    <string name="prompt">location label</string>
+    <string-array name="labels">
+        <item>Home</item>
+        <item>School</item>
+        <item>Lab</item>
+    </string-array>
 </resources>

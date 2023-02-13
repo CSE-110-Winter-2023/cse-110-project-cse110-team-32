@@ -1,0 +1,55 @@
+package com.example.team_32;
+
+import static org.junit.Assert.assertEquals;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.util.Pair;
+import androidx.lifecycle.MutableLiveData;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+
+import org.robolectric.shadows.ShadowContextWrapper;
+
+@RunWith(RobolectricTestRunner.class)
+public class LocationTesting {
+    private MainActivity mainActivity;
+    private LocationService LocServ;
+    private MutableLiveData<Pair<Double, Double>>mockLoc;
+    @Before
+    public void setUp() throws Exception {
+        // Create and launch the MainActivity
+        mainActivity = Robolectric.buildActivity(MainActivity.class).get();
+
+    }
+    @Test
+    public void testLocationWhenGranted(){
+        // Grant the location permission to the context
+        ShadowContextWrapper shadowContextWrapper = shadowOf(mainActivity);
+        shadowContextWrapper.grantPermissions("android.permission.ACCESS_FINE_LOCATION");
+        mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
+        mockLoc = new MutableLiveData<Pair<Double, Double>>();
+        LocServ = LocationService.singleton(null);
+        LocServ.setMockLocationSource(mockLoc);
+        var exp = new Pair<Double, Double>(32.4, 10.3);
+        mockLoc.setValue(exp);
+        assertEquals(exp, LocServ.getLocMan().getValue());
+    }
+
+    @Test
+    public void testLocationWhenNotGranted(){
+        // Grant the location permission to the context
+        ShadowContextWrapper shadowContextWrapper = shadowOf(mainActivity);
+        shadowContextWrapper.denyPermissions("android.permission.ACCESS_FINE_LOCATION");
+        try{
+            mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
+        }catch (IllegalStateException e){
+         assert true;
+         return;
+        }
+        assert false;
+    }
+}
