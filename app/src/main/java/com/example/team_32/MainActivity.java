@@ -22,7 +22,6 @@ import android.Manifest;
 
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
-
     private LocationService locationService;
     private boolean first = true;
 
@@ -59,12 +58,9 @@ public class MainActivity extends AppCompatActivity {
         });
         orientationService = OrientationService.singleton(this);
         ImageView comFace = findViewById(R.id.compassFace);
-        TextView orin = findViewById(R.id.orienText);
 
         orientationService.getOrientation().
-
                 observe(this, ori ->
-
                 {
                     float degrees = (float) Math.toDegrees((double) ori);
                     comFace.setRotation(-degrees);
@@ -110,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         TextView longitude = (TextView) findViewById(R.id.longitude);
         TextView latitude = (TextView) findViewById(R.id.latitude);
         return Utilities.parseDouble(longitude.getText().toString()).isPresent() && Utilities.parseDouble(latitude.getText().toString()).isPresent();
-
     }
 
     @Override

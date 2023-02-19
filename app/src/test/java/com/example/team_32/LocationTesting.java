@@ -3,12 +3,10 @@ package com.example.team_32;
 import static org.junit.Assert.assertEquals;
 import static org.robolectric.Shadows.shadowOf;
 
-import android.app.Activity;
 import android.util.Pair;
 import androidx.lifecycle.MutableLiveData;
 import androidx.test.core.app.ActivityScenario;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,8 +46,8 @@ public class LocationTesting {
 
     @Test
     public void testLocationWhenNotGranted(){
+        // deny the location permission to the context
         shadowContextWrapper.denyPermissions("android.permission.ACCESS_FINE_LOCATION");
-        // Grant the location permission to the context
         try{
             ActivityScenario m = ActivityScenario.launch(MainActivity.class);
         }catch (IllegalStateException e){
@@ -58,7 +56,4 @@ public class LocationTesting {
         }
         assert false;
     }
-
-
-
 }
