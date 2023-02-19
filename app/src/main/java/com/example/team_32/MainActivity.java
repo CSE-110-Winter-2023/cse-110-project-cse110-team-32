@@ -20,6 +20,9 @@ import android.widget.TextView;
 
 import android.Manifest;
 
+import java.util.Optional;
+import java.util.OptionalDouble;
+
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
     private LocationService locationService;
@@ -151,6 +154,17 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveClicked(View view) {
         saveHomeLocation();
 
+    }
+    public void onSetOrientationClicked(View view){
+        TextView orientation = findViewById(R.id.orientationText);
+        Optional<Double> ori = Utilities.parseDouble(orientation.getText().toString());
+        if (!ori.isPresent()){
+            orientationService.regSensorListeners();
+            return;
+        }else {
+            orientationService.unregSensors();
+            orientationService.setOrientationValue(ori.get().floatValue());
+        }
     }
 
     public void onSelectLocationLabelClicked(View view) {

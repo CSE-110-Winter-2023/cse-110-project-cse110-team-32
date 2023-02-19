@@ -90,6 +90,8 @@ public class OrientationService implements SensorEventListener {
     }
 
     public LiveData<Float> getOrientation(){return this.azimuth;}
+    public void setOrientationValue(Float o){this.azimuth.postValue(o);}
+
 
     public void setMockOrientation(MutableLiveData<Float> mockSource){
         unregSensors();

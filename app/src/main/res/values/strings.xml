@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">team_32</string>
     <string name="prompt">location label</string>
+    <string name="latitudeHint">Latitude</string>
+    <string name="longitudeHint">Longitude</string>
+    <string name="orientationHInt">Orientation</string>
+    <string name="set_orientationBtn">Set Orientation</string>
+    <string name="saveBtn">Save</string>
     <string-array name="labels">
         <item>Home</item>
         <item>School</item>
