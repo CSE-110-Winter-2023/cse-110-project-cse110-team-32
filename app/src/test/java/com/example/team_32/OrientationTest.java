@@ -88,13 +88,7 @@ public class OrientationTest {
         scenario.onActivity(act ->{
             TextView orientationText  = act.findViewById(R.id.orientationText);
             orientationText.setText(exp);
-            try{
-                act.onSetOrientationClicked(orientationText);
-            } catch (IllegalArgumentException e){
-                assert true;
-                return;
-            }
-            assert false;
+            assert !act.onSetOrientationClicked(orientationText);
         });
     }
 

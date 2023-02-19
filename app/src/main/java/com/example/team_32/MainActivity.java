@@ -138,15 +138,18 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveClicked(View view) {
         saveHomeLocation();
     }
-    public void onSetOrientationClicked(View view){
+    public boolean onSetOrientationClicked(View view){
         TextView orientation = findViewById(R.id.orientationText);
         Optional<Double> ori = Utilities.parseDouble(orientation.getText().toString());
         if (!ori.isPresent()){
             orientationService.regSensorListeners();
-            throw new IllegalArgumentException("Invalid orientation");
+            return false;
         } else {
             orientationService.unregSensors();
-            orientationService.setOrientationValue(ori.get().floatValue());
+            Double inRad = Math.toRadians(-ori.get());
+            System.out.println(inRad);
+            orientationService.setOrientationValue(inRad.floatValue());
+            return true;
         }
     }
 
