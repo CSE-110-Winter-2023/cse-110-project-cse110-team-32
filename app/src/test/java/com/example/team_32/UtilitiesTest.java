@@ -37,6 +37,4 @@ public class UtilitiesTest {
     public void testParseDoubleInvalidText() {
         assert !Utilities.parseDouble("Invalid Number").isPresent();
     }
-
-
 }

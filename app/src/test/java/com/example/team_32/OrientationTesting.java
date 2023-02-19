@@ -3,13 +3,8 @@ package com.example.team_32;
 import static org.junit.Assert.assertEquals;
 import static org.robolectric.Shadows.shadowOf;
 
-import android.util.Pair;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import androidx.lifecycle.MutableLiveData;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,17 +13,13 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowContextWrapper;
 
 
-import androidx.lifecycle.Lifecycle;
-import androidx.test.core.app.ActivityScenario;
-
-
 @RunWith(RobolectricTestRunner.class)
-public class orienTesting {
+public class OrientationTesting {
     private MainActivity mainActivity;
     private OrientationService oriServ;
     private MutableLiveData<Float>mockOri;
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Create and launch the MainActivity
         mainActivity = Robolectric.buildActivity(MainActivity.class).get();
         // Grant the location permission to the context
@@ -62,6 +53,5 @@ public class orienTesting {
         mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
         assertEquals(Double.toString(exp), Double.toString(oriServ.getOrientation().getValue()));
     }
-
 
 }
