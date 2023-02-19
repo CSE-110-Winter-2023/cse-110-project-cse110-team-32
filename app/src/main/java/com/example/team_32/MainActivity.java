@@ -20,11 +20,13 @@ import android.widget.TextView;
 
 import android.Manifest;
 
+import java.util.Optional;
+import java.util.OptionalDouble;
+
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
     private LocationService locationService;
     private boolean first = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,48 +42,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int arg2, long arg3) {
-                // TODO Auto-generated method stub
                 if (first) {
                     first = false;
                     return;
                 }
                 locationLabel.setText(((TextView) arg1).getText());
-
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-
             }
-
         });
         orientationService = OrientationService.singleton(this);
         ImageView comFace = findViewById(R.id.compassFace);
-
         orientationService.getOrientation().
                 observe(this, ori ->
                 {
                     float degrees = (float) Math.toDegrees((double) ori);
                     comFace.setRotation(-degrees);
                 });
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
         }
-
         locationService = LocationService.singleton(this);
-
         TextView textView = (TextView) findViewById(R.id.serviceTextView);
         ImageView home = findViewById(R.id.home);
-
         locationService.getLocation().
-
                 observe(this, loc ->
-
                 {
-
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
                     textView.setText(text);
                     orientationService.getOrientation().observe(this, ori -> {
@@ -97,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                         layoutParams.circleAngle = angle.floatValue();
                         home.setLayoutParams(layoutParams);
                     });
-
                 });
         loadHomeLocation();
     }
@@ -150,7 +137,20 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSaveClicked(View view) {
         saveHomeLocation();
-
+    }
+    public boolean onSetOrientationClicked(View view){
+        TextView orientation = findViewById(R.id.orientationText);
+        Optional<Double> ori = Utilities.parseDouble(orientation.getText().toString());
+        if (!ori.isPresent()){
+            orientationService.regSensorListeners();
+            return false;
+        } else {
+            orientationService.unregSensors();
+            Double inRad = Math.toRadians(-ori.get());
+            System.out.println(inRad);
+            orientationService.setOrientationValue(inRad.floatValue());
+            return true;
+        }
     }
 
     public void onSelectLocationLabelClicked(View view) {

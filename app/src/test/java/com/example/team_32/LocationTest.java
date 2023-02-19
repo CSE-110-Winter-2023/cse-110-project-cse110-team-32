@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowContextWrapper;
 
 @RunWith(RobolectricTestRunner.class)
-public class LocationTesting {
+public class LocationTest {
     private MainActivity mainActivity;
     private LocationService LocServ;
     private ShadowContextWrapper shadowContextWrapper;
