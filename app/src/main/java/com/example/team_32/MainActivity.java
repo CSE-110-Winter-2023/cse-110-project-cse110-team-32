@@ -2,10 +2,7 @@ package com.example.team_32;
 
 import static com.example.team_32.Angle.angleBetweenLocations;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-
+import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -18,7 +15,11 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import android.Manifest;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
@@ -39,15 +40,13 @@ public class MainActivity extends AppCompatActivity {
         TextView locationLabel = findViewById(R.id.location_label);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 // TODO Auto-generated method stub
                 if (first) {
                     first = false;
                     return;
                 }
-                locationLabel.setText(((TextView) arg1).getText());
-
+                locationLabel.setText(((TextView) view).getText());
             }
 
             @Override
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         });
         orientationService = OrientationService.singleton(this);
         ImageView comFace = findViewById(R.id.compassFace);
-        TextView orin = findViewById(R.id.orienText);
 
         orientationService.getOrientation().
 
@@ -78,16 +76,15 @@ public class MainActivity extends AppCompatActivity {
         locationService = LocationService.singleton(this);
 
         TextView textView = (TextView) findViewById(R.id.serviceTextView);
+        TextView locationText = (TextView) findViewById(R.id.locationText);
+        TextView orientationText = (TextView) findViewById(R.id.orientationText);
         ImageView home = findViewById(R.id.home);
 
         locationService.getLocation().
-
                 observe(this, loc ->
-
                 {
-
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
-                    textView.setText(text);
+                    locationText.setText(text);
                     orientationService.getOrientation().observe(this, ori -> {
                         float degrees = (float) Math.toDegrees((double) ori);
                         TextView longitude = (TextView) findViewById(R.id.longitude);
@@ -96,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         Pair<Double, Double> loc2 = new Pair<>(Utilities.parseDouble(latitude.getText().toString()).get(), Utilities.parseDouble(longitude.getText().toString()).get());
                         Double angle = angleBetweenLocations(loc, loc2, degrees);
-                        textView.setText(Double.toString(angle));
+                        orientationText.setText(String.format("Orientation: %f", angle));
                         ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) home.getLayoutParams();
                         layoutParams.circleAngle = angle.floatValue();
                         home.setLayoutParams(layoutParams);
@@ -127,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadHomeLocation() {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
         TextView latitude = findViewById(R.id.latitude);
         String loadedLatitude = preferences.getString("latitude", "");
         latitude.setText(loadedLatitude);
@@ -137,8 +133,9 @@ public class MainActivity extends AppCompatActivity {
         longitude.setText(loadedLongitude);
 
         TextView locationLabel = findViewById(R.id.location_label);
-        String loadedLocation_label = preferences.getString("location_label", "");
-        locationLabel.setText(loadedLocation_label);
+        String loadedLocationLabel = preferences.getString("location_label", "");
+        Log.d("MainActivity", "Loaded location label: " + loadedLocationLabel);
+        locationLabel.setText(loadedLocationLabel);
     }
 
     private void saveHomeLocation() {
