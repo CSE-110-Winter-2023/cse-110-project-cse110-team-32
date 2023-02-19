@@ -48,8 +48,8 @@ public class LocationTesting {
 
     @Test
     public void testLocationWhenNotGranted(){
+        // deny the location permission to the context
         shadowContextWrapper.denyPermissions("android.permission.ACCESS_FINE_LOCATION");
-        // Grant the location permission to the context
         try{
             ActivityScenario m = ActivityScenario.launch(MainActivity.class);
         }catch (IllegalStateException e){
@@ -58,7 +58,4 @@ public class LocationTesting {
         }
         assert false;
     }
-
-
-
 }

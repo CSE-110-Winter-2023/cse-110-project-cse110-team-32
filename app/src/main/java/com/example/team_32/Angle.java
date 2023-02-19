@@ -19,15 +19,6 @@ public class Angle {
 
             double bearingAngle = Math.atan2( X, Y );
 
-//            // Calculate the central angle between the two points
-//            double centralAngle = Math.acos(Math.sin(lat1) * Math.sin(lat2) +
-//                    Math.cos(lat1) * Math.cos(lat2) * Math.cos(deltaLong));
-
-//            // Calculate the initial bearing from point 1 to point 2
-//            double initialBearing = Math.atan2(Math.sin(deltaLong) * Math.cos(lat2),
-//                    Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLong));
-
-
             // Convert the bearing angle from radians to degrees
             bearingAngle = Math.toDegrees(bearingAngle);
 
