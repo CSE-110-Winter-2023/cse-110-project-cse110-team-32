@@ -62,6 +62,8 @@ public class OrientationTest {
     @Test
     public void testMockBtnValid(){
         var exp = (float)5;
+        Double inRad = Math.toRadians(-exp);
+        Float inRadF = inRad.floatValue();
         mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
         mockOri = oriServ.getOrientation();
         var scenario = ActivityScenario.launch(MainActivity.class);
@@ -72,8 +74,7 @@ public class OrientationTest {
             TextView orientationText  = act.findViewById(R.id.orientationText);
             orientationText.setText(Float.toString(exp));
             act.onSetOrientationClicked(orientationText);
-            String one = Float.toString(oriServ.getOrientation().getValue());
-            assertEquals(Float.toString(exp), Float.toString(oriServ.getOrientation().getValue()));
+            assertEquals(Float.toString(inRadF), Float.toString(oriServ.getOrientation().getValue()));
         });
     }
     @Test
