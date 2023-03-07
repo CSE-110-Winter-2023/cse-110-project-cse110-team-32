@@ -6,7 +6,10 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -32,6 +35,7 @@ class TimestampAdapter extends TypeAdapter<Long> {
 @Entity(tableName = "users")
 public class User {
 
+
     @PrimaryKey
     @SerializedName("public_code")
     @NonNull
@@ -54,6 +58,9 @@ public class User {
     public long updatedAt = 0;
 
     @Ignore
+    private Gson gson;
+
+    @Ignore
     public User(@NonNull String label, @NonNull float lat, @NonNull float lon, long updatedAt){
         this.label = label;
         this.lat =  lat;
@@ -62,12 +69,16 @@ public class User {
         var num = Math.floor(Math.random() *(198412 - 123 + 1) + 123);
         String temp = label.replace(" ","-") +"-"+ Double.toString(num);
         this.public_code = temp;
+        gson = new GsonBuilder().setPrettyPrinting().create();
     }
     public static User fromJSON(String json) {
         return new Gson().fromJson(json, User.class);
     }
 
     public String toJSON() {
-        return new Gson().toJson(this);
+        return gson.toJson(this);
     }
+
 }
+
+

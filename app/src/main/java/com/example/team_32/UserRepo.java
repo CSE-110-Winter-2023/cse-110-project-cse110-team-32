@@ -6,25 +6,19 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import java.time.Instant;
+
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class UserRepo {
     private final UserDao dao;
     private final UserAPI api;
     private final HashMap<String, LiveData<User>>userCache;
-
-    private ScheduledFuture<?> poller;
 
     public UserRepo(UserDao dao, UserAPI api){
         this.dao = dao;
@@ -33,7 +27,24 @@ public class UserRepo {
     }
     // Sync Methods
     // =============
+    public LiveData<User> getSynced(String public_code) {
+        var user = new MediatorLiveData<User>();
 
+        Observer<User> updateFromRemote = theirUser -> {
+            var ourUser = user.getValue();
+            if (theirUser == null) return; // do nothing
+            if (ourUser == null || ourUser.updatedAt < theirUser.updatedAt) {
+                upsertLocal(theirUser);
+            }
+        };
+
+        // If we get a local update, pass it on.
+        user.addSource(getLocal(public_code), user::postValue);
+        // If we get a remote update, update the local version (triggering the above observer)
+        user.addSource(getRemote(public_code), updateFromRemote);
+
+        return note;
+    }
 
     // Local Methods
     // =============
@@ -90,15 +101,14 @@ public class UserRepo {
     }
 
 
-    public void upsertRemote(User note) {
-        throw new UnsupportedOperationException("Not implemented yet");
-//        ExecutorService ex = Executors.newSingleThreadExecutor();
-//        String title = note.title;
-//        String json = note.toJSON();
-//        Log.i("upsertRemote:", json);
-//        ex.execute(() -> {
-//            noteAPI.putNote(title, json);
-//        });
+    public void upsertRemote(User mainUser) {
+        ExecutorService ex = Executors.newSingleThreadExecutor();
+        String public_code = mainUser.public_code;
+        String json = mainUser.toJSON();
+        Log.i("upsertRemote:", json);
+        ex.execute(() -> {
+            api.putUser(public_code, json);
+        });
     }
 
 
