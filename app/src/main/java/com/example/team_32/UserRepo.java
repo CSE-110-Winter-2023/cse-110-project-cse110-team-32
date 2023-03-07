@@ -43,7 +43,7 @@ public class UserRepo {
         // If we get a remote update, update the local version (triggering the above observer)
         user.addSource(getRemote(public_code), updateFromRemote);
 
-        return note;
+        return user;
     }
 
     // Local Methods
