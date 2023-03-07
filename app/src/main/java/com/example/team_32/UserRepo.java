@@ -78,7 +78,7 @@ public class UserRepo {
 
         ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
         exe.scheduleAtFixedRate(() -> {
-            String noteBody = api.getNote(public_code);
+            String noteBody = api.getUser(public_code);
             if (noteBody.contains(public_code)){
                 User tempNote = User.fromJSON(noteBody);
                 user.postValue(tempNote);
