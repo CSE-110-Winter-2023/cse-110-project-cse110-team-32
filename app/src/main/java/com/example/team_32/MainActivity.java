@@ -6,27 +6,43 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import android.Manifest;
+import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textview.MaterialTextView;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
     private LocationService locationService;
     private boolean first = true;
+    // assume that 1 is uid or current user
+    private String currentUid = "1";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         TextView locationLabel = findViewById(R.id.location_label);
+        MaterialTextView uidLabel = findViewById(R.id.uid);
+        uidLabel.setText("UID: " + currentUid);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
@@ -48,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 locationLabel.setText(((TextView) arg1).getText());
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
             }
@@ -87,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 });
         loadHomeLocation();
+        setupDatabase();
     }
 
     private boolean inputValid() {
@@ -121,6 +141,10 @@ public class MainActivity extends AppCompatActivity {
         TextView locationLabel = findViewById(R.id.location_label);
         String loadedLocation_label = preferences.getString("location_label", "");
         locationLabel.setText(loadedLocation_label);
+
+        MaterialTextView username = findViewById(R.id.username);
+        String loadedUsername = preferences.getString("username", "CLick to set user name");
+        username.setText(loadedUsername);
     }
 
     private void saveHomeLocation() {
@@ -135,13 +159,27 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    public void savePref(String key, Object value) {
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if (value instanceof String) {
+            editor.putString(key, (String) value);
+        } else if (value instanceof Integer) {
+            editor.putInt(key, (Integer) value);
+        } else if (value instanceof Boolean) {
+            editor.putBoolean(key, (Boolean) value);
+        }
+        editor.apply();
+    }
+
     public void onSaveClicked(View view) {
         saveHomeLocation();
     }
-    public boolean onSetOrientationClicked(View view){
+
+    public boolean onSetOrientationClicked(View view) {
         TextView orientation = findViewById(R.id.orientationText);
         Optional<Double> ori = Utilities.parseDouble(orientation.getText().toString());
-        if (!ori.isPresent()){
+        if (!ori.isPresent()) {
             orientationService.regSensorListeners();
             return false;
         } else {
@@ -156,5 +194,57 @@ public class MainActivity extends AppCompatActivity {
     public void onSelectLocationLabelClicked(View view) {
         Spinner spinner = findViewById(R.id.spinner);
         spinner.performClick();
+    }
+
+    public void onEditUsernameClicked(View view) {
+        MaterialTextView username = findViewById(R.id.username);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Modify user name");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+        builder.setPositiveButton("confirm", (dialog, which) -> {
+            username.setText(input.getText());
+            savePref("username", input.getText().toString());
+        });
+        builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+        // TODO: sync username with database
+    }
+
+    public void onAddFriendClicked(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add friend");
+        final EditText uid = new EditText(this);
+        uid.setHint("UID");
+        uid.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(uid);
+        builder.setPositiveButton("confirm", (dialog, which) -> {
+            // TODO: get users from real database and add friends to real database
+            List<FakeUser> users = FakeDatabase.getUsers();
+            List<FakeUser> friends = FakeDatabase.getFriends(currentUid);
+            Optional<FakeUser> found = users.stream().filter(f -> f.getUid().equals(uid.getText().toString())).findFirst();
+            if (found.isPresent()) {
+                if (friends.stream().anyMatch(f -> f.getUid().equals(found.get().getUid()))) {
+                    Snackbar.make(view, "Friend already added", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
+                } else if (found.get().getUid().equals(currentUid)) {
+                    Snackbar.make(view, "You can't add yourself", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
+                } else {
+                    FakeDatabase.addFriend(currentUid, found.get());
+                    Snackbar.make(view, "Friend added", Snackbar.LENGTH_LONG).setTextColor(Color.GREEN).show();
+
+                }
+            } else {
+                Snackbar.make(view, "User not found", Snackbar.LENGTH_SHORT).setTextColor(Color.RED).show();
+            }
+        });
+        builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void setupDatabase() {
+        List<FakeUser> users = Utilities.getFakeUsers();
+        FakeDatabase.setUsers(users);
+
     }
 }
