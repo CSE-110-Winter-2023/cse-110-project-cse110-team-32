@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'com.example.team_32'
-    compileSdk 33
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.example.team_32"
         minSdk 28
-        targetSdk 33
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -31,9 +31,6 @@ android {
             includeAndroidResources = true
         }
     }
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
@@ -41,8 +38,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.9'
     testImplementation 'androidx.test:core:1.5.0'
