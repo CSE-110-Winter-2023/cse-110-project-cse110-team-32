@@ -70,7 +70,6 @@ public class UserRepo {
 
     // Remote Methods
     // ==============
-
     // get the data for a user from the server
     public LiveData<User> getRemote(String public_code) {
 

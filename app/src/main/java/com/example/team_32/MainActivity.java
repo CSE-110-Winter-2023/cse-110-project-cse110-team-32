@@ -26,12 +26,17 @@ import java.util.OptionalDouble;
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
     private LocationService locationService;
+
+    private mainUser mainuser;
     private boolean first = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        if (!mainUser.exists()){
+            // go to another activity
+        }
+        mainuser = mainUser.singleton();
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.labels, android.R.layout.simple_spinner_item);
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 });
         loadHomeLocation();
+
     }
 
     private boolean inputValid() {
