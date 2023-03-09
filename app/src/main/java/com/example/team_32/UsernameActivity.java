@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class UsernameActivity extends AppCompatActivity {
 
@@ -30,8 +29,6 @@ public class UsernameActivity extends AppCompatActivity {
         }else {
             Log.d("nameActivity", "onUserNameSaveBtnClicked: ");
             var a = mainUser.singleton(usrName.getText().toString(), 0, 0, 0);
-//            TextView uidLabel = findViewById(R.id.UIDlable);
-//            uidLabel.setText("UID: "+a.public_code);
             Log.d("nameActivity", "Done ?");
             finish();
         }

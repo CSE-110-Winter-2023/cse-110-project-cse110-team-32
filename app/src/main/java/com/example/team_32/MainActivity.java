@@ -5,26 +5,41 @@ import static com.example.team_32.Angle.angleBetweenLocations;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import android.Manifest;
+import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textview.MaterialTextView;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
@@ -119,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                     });
                 });
         loadHomeLocation();
-
     }
 
     private boolean inputValid() {
@@ -208,5 +222,22 @@ public class MainActivity extends AppCompatActivity {
     public void onSelectLocationLabelClicked(View view) {
         Spinner spinner = findViewById(R.id.spinner);
         spinner.performClick();
+    }
+
+
+    public void onAddFriendClicked(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add friend");
+        final EditText uid = new EditText(this);
+        Log.i("UID", "onAddFriendClicked: " + uid.getId());
+        uid.setHint("UID");
+        uid.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(uid);
+        builder.setPositiveButton("confirm", (dialog, which) -> {
+            String newUID = uid.getText().toString();
+            repo.getSynced(newUID);
+        });
+        builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 }
