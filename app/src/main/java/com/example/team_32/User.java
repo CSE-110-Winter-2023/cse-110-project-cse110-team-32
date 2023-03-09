@@ -64,8 +64,8 @@ public class User {
         this.latitude =  0;
         this.longitude =  0;
         this.updatedAt = 0;
-        var num = Math.floor(Math.random() *(198412 - 123 + 1) + 123);
-        String temp = label.replace(" ","-") +"-"+ Double.toString(num);
+        var num = (int) Math.floor(Math.random() *(198412 - 123 + 1) + 123);
+        String temp = label.replace(" ","-") +"-"+ Integer.toString(num);
         this.public_code = temp;
 //        gson = new GsonBuilder().setPrettyPrinting().create();
     }
@@ -76,8 +76,8 @@ public class User {
         this.latitude = latitude;
         this.longitude = longitude;
         this.updatedAt = updatedAt;
-        var num = Math.floor(Math.random() *(198412 - 123 + 1) + 123);
-        String temp = label.replace(" ","-") +"-"+ Double.toString(num);
+        var num = (int) Math.floor(Math.random() *(198412 - 123 + 1) + 123);
+        String temp = label.replace(" ","-") +"-"+ Integer.toString(num);
         this.public_code = temp;
 //        gson = new GsonBuilder().setPrettyPrinting().create();
     }
@@ -88,8 +88,8 @@ public class User {
         this.latitude = latitude;
         this.longitude = longitude;
         this.updatedAt = updatedAt;
-        var num = Math.floor(Math.random() *(198412 - 123 + 1) + 123);
-        String temp = label.replace(" ","-") +"-"+ Double.toString(num);
+        var num = (int) Math.floor(Math.random() *(198412 - 123 + 1) + 123);
+        String temp = label.replace(" ","-") +"-"+ Integer.toString(num);
         this.public_code = temp;
 //        gson = new GsonBuilder().setPrettyPrinting().create();
     }

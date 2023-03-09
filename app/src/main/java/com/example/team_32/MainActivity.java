@@ -138,8 +138,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mainuser = mainUser.singleton();
-       if (mainuser != null) saveUser();
-//        loadUser();
+       if (mainuser != null) {
+           saveUser();
+           loadUser();
+       }
         orientationService.regSensorListeners();
     }
     private void saveUser(){
@@ -152,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
     private void loadUser(){
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         public_code = preferences.getString("public_code","");
+        TextView uidLabel =findViewById(R.id.UIDlable);
+        uidLabel.setText("UID: "+public_code);
         Log.i("PRE11", "loadUser: " + public_code);
     }
 
