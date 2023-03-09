@@ -52,13 +52,17 @@ public class UserRepo {
         return dao.get(public_code);
     }
 
+    public User getLocalMain(String public_code) {
+        return dao.getMain(public_code);
+    }
+
     public LiveData<List<User>> getAllLocal() {
         return dao.getAll();
     }
 
     public void upsertLocal(User user) {
         user.updatedAt = System.currentTimeMillis()/1000;
-        dao.upsert(user);
+        Log.i("PRE11", "upsertLocal: " + dao.upsert(user));
     }
 
     public void deleteLocal(User user) {
@@ -109,6 +113,4 @@ public class UserRepo {
             api.putUser(public_code, json);
         });
     }
-
-
 }

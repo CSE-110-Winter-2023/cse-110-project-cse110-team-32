@@ -19,6 +19,9 @@ public abstract class UserDao {
     @Query("SELECT * FROM users WHERE public_code = :public_code")
     public abstract LiveData<User> get(String public_code);
 
+    @Query("SELECT * FROM users WHERE public_code = :public_code")
+    public abstract User getMain(String public_code);
+
     @Query("SELECT * FROM users ORDER BY public_code")
     public abstract LiveData<List<User>> getAll();
 

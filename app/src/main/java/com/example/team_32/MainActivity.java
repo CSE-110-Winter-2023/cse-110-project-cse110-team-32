@@ -5,7 +5,10 @@ import static com.example.team_32.Angle.angleBetweenLocations;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -26,17 +29,34 @@ import java.util.OptionalDouble;
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
     private LocationService locationService;
-
     private mainUser mainuser;
+    private String public_code;
+    private UserRepo repo;
     private boolean first = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (!mainUser.exists()){
-            // go to another activity
+        Context context = getApplication().getApplicationContext();
+        var viewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        var db = UserDatabase.provide(context);
+        repo = new UserRepo(db.getDao(), UserAPI.provide());
+        loadUser();
+        if(public_code != null && !public_code.isEmpty()){
+            Log.i("PRE11", public_code);
+            var temp = repo.existsLocal(public_code);
+            var temp2 = repo.getLocalMain(public_code);
+
+            Log.i("PRE11", ("Founded? "+ String.valueOf(temp) + "value ? " + String.valueOf(temp2.public_code)));
+            mainuser = mainUser.fromUser(temp2);
         }
-        mainuser = mainUser.singleton();
+        if (!mainUser.exists()){
+            Log.i("nameActivity", "Went there ? ");
+            Intent userNameAct = new Intent(this, UsernameActivity.class);
+            startActivity(userNameAct);
+        }
+
+
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.labels, android.R.layout.simple_spinner_item);
@@ -75,7 +95,14 @@ public class MainActivity extends AppCompatActivity {
         locationService.getLocation().
                 observe(this, loc ->
                 {
+
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
+                    if (loc.first != null && loc.second != null) {
+                        if (mainuser != null){ mainuser.updateLoc(loc.first, loc.second);
+                            repo.upsertRemote(mainuser);
+                            repo.upsertLocal(mainuser);
+                        }
+                    }
                     textView.setText(text);
                     orientationService.getOrientation().observe(this, ori -> {
                         float degrees = (float) Math.toDegrees((double) ori);
@@ -110,7 +137,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mainuser = mainUser.singleton();
+       if (mainuser != null) saveUser();
+//        loadUser();
         orientationService.regSensorListeners();
+    }
+    private void saveUser(){
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("public_code", mainuser.public_code);
+        editor.apply();
+    }
+
+    private void loadUser(){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        public_code = preferences.getString("public_code","");
+        Log.i("PRE11", "loadUser: " + public_code);
     }
 
     private void loadHomeLocation() {
