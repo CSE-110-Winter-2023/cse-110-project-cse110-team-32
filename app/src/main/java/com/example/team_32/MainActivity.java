@@ -229,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add friend");
         final EditText uid = new EditText(this);
+        Log.i("UID", "onAddFriendClicked: " + uid.getId());
         uid.setHint("UID");
         uid.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(uid);

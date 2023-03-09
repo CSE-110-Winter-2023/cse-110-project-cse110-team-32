@@ -13,20 +13,4 @@ public class Utilities {
             return Optional.empty();
         }
     }
-    public static List<FakeUser> getFakeUsers(){
-        List<FakeUser> fakeUsers = new ArrayList<>();
-        for(int i = 0; i < 10; i++){
-            FakeUser fakeUser = new FakeUser("User " + i, "" + i);
-            fakeUsers.add(fakeUser);
-        }
-        return fakeUsers;
-    }
-    public static List<FakeUser> getFakeFriends(){
-        List<FakeUser> fakeFriends = new ArrayList<>();
-        for(int i = 0; i < 3; i++){
-            FakeUser fakeFriend = new FakeUser("Friend " + i, "" + i);
-            fakeFriends.add(fakeFriend);
-        }
-        return fakeFriends;
-    }
 }
