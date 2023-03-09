@@ -5,6 +5,9 @@ import static com.example.team_32.Angle.angleBetweenLocations;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.AlertDialog;
@@ -230,23 +233,8 @@ public class MainActivity extends AppCompatActivity {
         uid.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(uid);
         builder.setPositiveButton("confirm", (dialog, which) -> {
-            // TODO: get users from real database and add friends to real database
-            List<FakeUser> users = FakeDatabase.getUsers(); //the MainUser
-            List<FakeUser> friends = FakeDatabase.getFriends(currentUid); //Friends
-//            Optional<FakeUser> found = users.stream().filter(f -> f.getUid().equals(uid.getText().toString())).findFirst(); // find the new friend
-//            if (found.isPresent()) {
-//                if (friends.stream().anyMatch(f -> f.getUid().equals(found.get().getUid()))) {
-//                    Snackbar.make(view, "Friend already added", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
-//                } else if (found.get().getUid().equals(currentUid)) {
-//                    Snackbar.make(view, "You can't add yourself", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
-//                } else {
-//                    FakeDatabase.addFriend(currentUid, found.get());
-//                    Snackbar.make(view, "Friend added", Snackbar.LENGTH_LONG).setTextColor(Color.GREEN).show();
-//
-//                }
-//            } else {
-//                Snackbar.make(view, "User not found", Snackbar.LENGTH_SHORT).setTextColor(Color.RED).show();
-//            }
+            String newUID = uid.getText().toString();
+            repo.getSynced(newUID);
         });
         builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
         builder.show();
