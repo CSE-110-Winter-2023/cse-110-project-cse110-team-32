@@ -76,7 +76,7 @@ public class UserRepo {
     // ==============
     // get the data for a user from the server
     public LiveData<User> getRemote(String public_code) {
-        Log.i("GET Remote User", "Started");
+
         //already having the user
         if (userCache.containsKey(public_code))
             return userCache.get(public_code);
@@ -86,24 +86,18 @@ public class UserRepo {
         ex.execute(() -> {
             String userInfo = api.getUser(public_code);
             if (userInfo.contains(public_code)){
-                Log.i("GET Remote User", userInfo);
-                User tempUser = User.fromJSON(userInfo);
-                Log.i("GET Remote User", "Data" + tempUser.label);
-                user.postValue(tempUser);
-            }else {
-                user.postValue(null);
-            }
-        });
+                User tempNote = User.fromJSON(userInfo);
+                user.postValue(tempNote);
+            }});
+
         ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
         exe.scheduleAtFixedRate(() -> {
-            String userInfo = api.getUser(public_code);
-            if (userInfo.contains(public_code)){
-                Log.i("GET Remote User", userInfo);
-                User tempUser = User.fromJSON(userInfo);
-                Log.i("GET Remote User", "label: " + tempUser.label);
-                user.postValue(tempUser);
+            String noteBody = api.getUser(public_code);
+            if (noteBody.contains(public_code)){
+                User tempNote = User.fromJSON(noteBody);
+                user.postValue(tempNote);
             }
-        }, 0, 3, TimeUnit.SECONDS);
+        }, 3, 3, TimeUnit.SECONDS);
 
         userCache.put(public_code, user);
         return user;
