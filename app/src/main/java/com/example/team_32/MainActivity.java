@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationService locationService;
     private boolean first = true;
     // assume that 1 is uid or current user
-    private String currentUid = "1";
+
 
 
     @Override
@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         TextView locationLabel = findViewById(R.id.location_label);
-        MaterialTextView uidLabel = findViewById(R.id.uid);
-        uidLabel.setText("UID: " + currentUid);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
@@ -196,21 +195,6 @@ public class MainActivity extends AppCompatActivity {
         spinner.performClick();
     }
 
-    public void onEditUsernameClicked(View view) {
-        MaterialTextView username = findViewById(R.id.username);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Modify user name");
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-        builder.setPositiveButton("confirm", (dialog, which) -> {
-            username.setText(input.getText());
-            savePref("username", input.getText().toString());
-        });
-        builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
-        // TODO: sync username with database
-    }
 
     public void onAddFriendClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -221,30 +205,24 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(uid);
         builder.setPositiveButton("confirm", (dialog, which) -> {
             // TODO: get users from real database and add friends to real database
-            List<FakeUser> users = FakeDatabase.getUsers();
-            List<FakeUser> friends = FakeDatabase.getFriends(currentUid);
-            Optional<FakeUser> found = users.stream().filter(f -> f.getUid().equals(uid.getText().toString())).findFirst();
-            if (found.isPresent()) {
-                if (friends.stream().anyMatch(f -> f.getUid().equals(found.get().getUid()))) {
-                    Snackbar.make(view, "Friend already added", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
-                } else if (found.get().getUid().equals(currentUid)) {
-                    Snackbar.make(view, "You can't add yourself", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
-                } else {
-                    FakeDatabase.addFriend(currentUid, found.get());
-                    Snackbar.make(view, "Friend added", Snackbar.LENGTH_LONG).setTextColor(Color.GREEN).show();
-
-                }
-            } else {
-                Snackbar.make(view, "User not found", Snackbar.LENGTH_SHORT).setTextColor(Color.RED).show();
-            }
+            List<FakeUser> users = FakeDatabase.getUsers(); //the MainUser
+            List<FakeUser> friends = FakeDatabase.getFriends(currentUid); //Friends
+//            Optional<FakeUser> found = users.stream().filter(f -> f.getUid().equals(uid.getText().toString())).findFirst(); // find the new friend
+//            if (found.isPresent()) {
+//                if (friends.stream().anyMatch(f -> f.getUid().equals(found.get().getUid()))) {
+//                    Snackbar.make(view, "Friend already added", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
+//                } else if (found.get().getUid().equals(currentUid)) {
+//                    Snackbar.make(view, "You can't add yourself", Snackbar.LENGTH_SHORT).setTextColor(Color.WHITE).show();
+//                } else {
+//                    FakeDatabase.addFriend(currentUid, found.get());
+//                    Snackbar.make(view, "Friend added", Snackbar.LENGTH_LONG).setTextColor(Color.GREEN).show();
+//
+//                }
+//            } else {
+//                Snackbar.make(view, "User not found", Snackbar.LENGTH_SHORT).setTextColor(Color.RED).show();
+//            }
         });
         builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
         builder.show();
-    }
-
-    private void setupDatabase() {
-        List<FakeUser> users = Utilities.getFakeUsers();
-        FakeDatabase.setUsers(users);
-
     }
 }
