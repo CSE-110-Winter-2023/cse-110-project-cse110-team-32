@@ -56,9 +56,10 @@ public class UserPosAdapter extends ArrayAdapter<User> {
 
         double cor = Angle.angleBetweenLocations(new Pair<Double,Double>((double) usr.latitude, (double) usr.longitude), new Pair<Double,Double>((double) mainuser.latitude, (double) mainuser.longitude), 0);
         float x =  usr.longitude - mainuser.longitude, y = usr.latitude - mainuser.latitude;
-        Log.i("Pos",  usr.label +" : " + x + ", "+ y);
-        itemView.setX(xOffset + x*4);
-        itemView.setY(yOffset + y*-4);
+        Log.i("Pos",  usr.label +" : " + x + ", "+ y + "\n"+usr.toJSON());
+
+        itemView.setX(xOffset + x*-1);
+        itemView.setY(yOffset + y*-1);
         return itemView;
     }
     @Override

@@ -29,10 +29,10 @@ public class UserRepo {
     // =============
     public LiveData<User> getSynced(String public_code) {
         Log.i("DD!!", "getSynced: getting Synced ? " + public_code);
-        var user = new MediatorLiveData<User>();
+        var m_user = new MutableLiveData<User>();
         Observer<User> updateFromRemote = theirUser -> {
             Log.i("DD!!", "getSynced: upsert locally ? started");
-            var ourUser = user.getValue();
+            var ourUser = m_user.getValue();
             if (theirUser == null){
                 Log.i("DD!!", "getSynced: upsert locally ? failed ?");
                 return;} // do nothing
@@ -42,13 +42,9 @@ public class UserRepo {
             }
         };
 
-        // If we get a local update, pass it on.
-        user.addSource(getLocal(public_code), user::postValue);
-        // If we get a remote update, update the local version (triggering the above observer)
-        user.addSource(getRemote(public_code), updateFromRemote);
-        Log.i("DD!!", "getSynced: getting Synced ? sourced added ?");
-
-        return user;
+        getLocal(public_code).observeForever(m_user::postValue);
+        getRemote(public_code).observeForever(updateFromRemote);
+        return m_user;
     }
 
     // Local Methods
@@ -97,12 +93,12 @@ public class UserRepo {
 
         ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
         exe.scheduleAtFixedRate(() -> {
-            String noteBody = api.getUser(public_code);
-            if (noteBody.contains(public_code)){
-                User tempNote = User.fromJSON(noteBody);
+            String userInfo = api.getUser(public_code);
+            if (userInfo.contains(public_code)){
+                User tempNote = User.fromJSON(userInfo);
                 user.postValue(tempNote);
-            }
-        }, 3, 3, TimeUnit.SECONDS);
+                Log.i("POSTED Value: ", tempNote.toJSON());
+            }}, 3, 3, TimeUnit.SECONDS);
 
         userCache.put(public_code, user);
         return user;
