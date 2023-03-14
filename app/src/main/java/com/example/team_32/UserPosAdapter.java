@@ -51,47 +51,50 @@ public class UserPosAdapter extends ArrayAdapter<User> {
         float len = Utilities.len(vector);
         Log.i("Pos2",  usr.label +" : " + x + ", "+ y  + "dist:"+ Utilities.distanceInMiles(vector)+ "\n" +usr.toJSON());
         View itemView = convertView;
-
+        if (itemView == null) {
+            itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.outer_user_item, parent, false);
+        }
+        float xOffset = (float) ((parent.getWidth()- itemView.getWidth())/2);
+        float yOffset = (float) ((parent.getHeight()-itemView.getHeight())/2);
+        //normalize
+        x /= len;
+        y /= len;
         // based on the distance, populate the correct layOut
         if (dist > zoomLvls[maxZoomIdx]){
             //displayed on the outer ring as a dot only.
-            if (itemView == null) {
-                itemView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.outer_user_item, parent, false);
-            }
-            float xOffset = (float) ((parent.getWidth()- itemView.getWidth())/2);
-            float yOffset = (float) ((parent.getHeight()-itemView.getHeight())/2);
             Log.i("Pos2",  usr.label + "dist: outerRing" + x + ", " + y + " is : "+dist);
-            x /= len;
-            y /= len;
-            x*= 300;
-            y*= 300;
+
+            x*= 450;
+            y*= 450;
             Log.i("Pos2",  usr.label + "dist: outerRing" + x + ", " + y);
             itemView.setX(xOffset + x);
             itemView.setY(yOffset + y);
         }else {
-            if (itemView == null) {
-                itemView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.outer_user_item, parent, false);
-            }
+            if (dist < 1){
 //            TextView label = itemView.findViewById(R.id.user_label);
 //            label.setText((usr.label));
-            x*= 30;
-            y*= 30;
+                x *= ((450/2) * (dist/1));
+                y *= ((450/2)* (dist/1));
+            }else {
+//            TextView label = itemView.findViewById(R.id.user_label);
+//            label.setText((usr.label));
+                x *= (450 * (dist/10));
+                y *= (450* (dist/10));
 
-            float xOffset = (float) ((parent.getWidth() - itemView.getWidth()) / 2);
-            float yOffset = (float) ((parent.getHeight() - itemView.getHeight()) / 2);
-            if ((usr.public_code+"_private2").equals(mainuser.private_code)){
-                Log.i("Pos2", "getView: "+ usr.label);
+            }
+            Log.i("Pos2", "getting in ?");
+            if ((usr.public_code + "_private2").equals(mainuser.private_code)) {
+                Log.i("Pos2", "getView: " + usr.label);
                 itemView.setX(0);
                 itemView.setY(yOffset);
-            }
-            else {
-//                Log.i("Pos2", usr.label + " : inner" + mainuser.public_code);
+            } else {
+                Log.i("Pos2", usr.label + " : inner" + (xOffset + x) + ", "+(yOffset + y));
                 itemView.setX(xOffset + x);
                 itemView.setY(yOffset + y);
             }
         }
+        Log.i("Pos2", "----------------------------");
         return itemView;
     }
     @Override
