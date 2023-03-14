@@ -139,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Todo: Fix Orientation Set-Up
     private void setUpOri() {
+        if (orientationService.getOrientation().hasObservers())
+            return;
         orientationService.getOrientation().
                 observe(this, ori ->
                 {
