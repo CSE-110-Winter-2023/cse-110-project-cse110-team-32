@@ -54,12 +54,15 @@ public class UserPosAdapter extends ArrayAdapter<User> {
 
 //        Log.i("Making a view", "getView: " + position + "for \n"+ usr.toJSON());
 
-        double cor = Angle.angleBetweenLocations(new Pair<Double,Double>((double) usr.latitude, (double) usr.longitude), new Pair<Double,Double>((double) mainuser.latitude, (double) mainuser.longitude), 0);
-        float x =  usr.longitude - mainuser.longitude, y = usr.latitude - mainuser.latitude;
-        Log.i("Pos",  usr.label +" : " + x + ", "+ y + "\n"+usr.toJSON());
+//        double cor = Angle.angleBetweenLocations(new Pair<Double,Double>((double) usr.latitude, (double) usr.longitude), new Pair<Double,Double>((double) mainuser.latitude, (double) mainuser.longitude), 0);
+        android.util.Pair<Double, Double> mainUsrLoc = new Pair<>((double)mainuser.latitude, (double)mainuser.longitude);
+        android.util.Pair<Double, Double> usrLoc = new Pair<>((double)usr.latitude, (double)usr.longitude);
+        float[] vector = Utilities.getRelativeVector(mainUsrLoc, usrLoc);
+        float x =  vector[0], y = -vector[1];
+        Log.i("Pos",  usr.label +" : " + x+ xOffset + ", "+ y +yOffset + "dist:"+ Utilities.distanceInMiles(vector)+ "\n" +usr.toJSON());
 
-        itemView.setX(xOffset + x*-1);
-        itemView.setY(yOffset + y*-1);
+        itemView.setX(xOffset + x);
+        itemView.setY(yOffset + y);
         return itemView;
     }
     @Override

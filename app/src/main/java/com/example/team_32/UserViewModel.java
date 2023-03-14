@@ -9,12 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+
 
 import java.util.List;
 
-import kotlin.Pair;
 
 public class UserViewModel extends AndroidViewModel {
+
     private LiveData<List<User>> users;
     private final UserDao userDao;
     private final UserRepo userRepo;
@@ -72,6 +74,16 @@ public class UserViewModel extends AndroidViewModel {
         if (mainuser == null)
             mainuser = mainUser.singleton();
         return mainuser.public_code;
+    }
+    public void reSyncAll(){
+        var data =getUsers();
+        Utilities.observeOnce(data, usrs ->{
+            for (var usr: usrs){
+                if (!(usr.public_code+"_private2").equals(mainuser.private_code)){
+                    userRepo.getSynced(usr.public_code);
+                }
+            }
+        });
     }
 
     public LiveData<List<User>> getUsers() {

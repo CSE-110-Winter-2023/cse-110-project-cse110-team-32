@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(userPosAdapter);
         viewModel.getUsers().observe(this, userPosAdapter::setUsers);
         userPosAdapter.notifyDataSetChanged();
-
     }
 
 //    Todo: Fix this part
@@ -172,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
        if (mainUser.exists()) {
            saveMainUser();
            loadMainUser();
+           viewModel.reSyncAll();
        }
         orientationService.regSensorListeners();
     }
