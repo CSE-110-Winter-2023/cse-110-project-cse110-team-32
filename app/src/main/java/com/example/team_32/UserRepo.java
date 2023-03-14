@@ -28,12 +28,16 @@ public class UserRepo {
     // Sync Methods
     // =============
     public LiveData<User> getSynced(String public_code) {
+        Log.i("DD!!", "getSynced: getting Synced ? " + public_code);
         var user = new MediatorLiveData<User>();
-
         Observer<User> updateFromRemote = theirUser -> {
+            Log.i("DD!!", "getSynced: upsert locally ? started");
             var ourUser = user.getValue();
-            if (theirUser == null) return; // do nothing
+            if (theirUser == null){
+                Log.i("DD!!", "getSynced: upsert locally ? failed ?");
+                return;} // do nothing
             if (ourUser == null || ourUser.updatedAt < theirUser.updatedAt) {
+                Log.i("DD!!", "getSynced: upsert locally ? ");
                 upsertLocal(theirUser);
             }
         };
@@ -42,6 +46,7 @@ public class UserRepo {
         user.addSource(getLocal(public_code), user::postValue);
         // If we get a remote update, update the local version (triggering the above observer)
         user.addSource(getRemote(public_code), updateFromRemote);
+        Log.i("DD!!", "getSynced: getting Synced ? sourced added ?");
 
         return user;
     }

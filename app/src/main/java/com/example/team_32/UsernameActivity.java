@@ -14,9 +14,6 @@ public class UsernameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_username);
-//        EditText usrName = findViewById(R.id.userNameEntry);
-//        String name= usrName.getText().toString();
-//        Log.d("nameActivity", String.valueOf(name.isEmpty()));
     }
 
     public void onUserNameSaveBtnClicked(View view) {

@@ -40,7 +40,7 @@ public class mainUser extends User{
     @Ignore
     public mainUser(@NonNull String label, @NonNull float lat, @NonNull float lon, long updatedAt) {
         super(label, lat, lon, updatedAt);
-        this.private_code ="private_"+this.public_code;
+        this.private_code = String.valueOf(this.public_code + "_private2");
         gson = new GsonBuilder().setExclusionStrategies(new JsonExcPut()).setPrettyPrinting().create();
         Log.d("nameActivity", "worked out ?");
     }

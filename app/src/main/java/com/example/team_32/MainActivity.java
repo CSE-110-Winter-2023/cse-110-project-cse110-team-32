@@ -3,122 +3,67 @@ package com.example.team_32;
 import static com.example.team_32.Angle.angleBetweenLocations;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import android.Manifest;
-import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textview.MaterialTextView;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
     private LocationService locationService;
-    private mainUser mainuser;
     private String public_code;
-    private UserRepo repo;
     private boolean first = true;
+    public UserPosAdapter userPosAdapter;
+
+    UserViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Context context = getApplication().getApplicationContext();
-        var viewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        var db = UserDatabase.provide(context);
-        repo = new UserRepo(db.getDao(), UserAPI.provide());
-        loadUser();
-        if(public_code != null && !public_code.isEmpty()){
-            Log.i("PRE11", public_code);
-            var temp = repo.existsLocal(public_code);
-            var temp2 = repo.getLocalMain(public_code);
 
-            Log.i("PRE11", ("Founded? "+ String.valueOf(temp) + "value ? " + String.valueOf(temp2.public_code)));
-            mainuser = mainUser.fromUser(temp2);
-        }
+        viewModel = setUpViewModel();
+        Context context = getApplication().getApplicationContext();
+
+        loadMainUser();
         if (!mainUser.exists()){
             Log.i("nameActivity", "Went there ? ");
             Intent userNameAct = new Intent(this, UsernameActivity.class);
             startActivity(userNameAct);
         }
 
-
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.labels, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        TextView locationLabel = findViewById(R.id.location_label);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-                if (first) {
-                    first = false;
-                    return;
-                }
-                locationLabel.setText(((TextView) arg1).getText());
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        });
         orientationService = OrientationService.singleton(this);
-        ImageView comFace = findViewById(R.id.compassFace);
-        orientationService.getOrientation().
-                observe(this, ori ->
-                {
-                    float degrees = (float) Math.toDegrees((double) ori);
-                    comFace.setRotation(-degrees);
-                });
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
-        }
+        setUpOri();
+        getPermissions();
         locationService = LocationService.singleton(this);
-        TextView textView = (TextView) findViewById(R.id.serviceTextView);
-        ImageView home = findViewById(R.id.home);
+//        setUpLoc();
         locationService.getLocation().
                 observe(this, loc ->
                 {
-
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
                     if (loc.first != null && loc.second != null) {
-                        if (mainuser != null){ mainuser.updateLoc(loc.first, loc.second);
-                            repo.upsertRemote(mainuser);
-                            repo.upsertLocal(mainuser);
-                        }
+                            viewModel.updateMain(loc);
                     }
-                    textView.setText(text);
+
                     orientationService.getOrientation().observe(this, ori -> {
                         float degrees = (float) Math.toDegrees((double) ori);
                         TextView longitude = (TextView) findViewById(R.id.longitude);
@@ -126,16 +71,87 @@ public class MainActivity extends AppCompatActivity {
                         if (!this.inputValid())
                             return;
                         Pair<Double, Double> loc2 = new Pair<>(Utilities.parseDouble(latitude.getText().toString()).get(), Utilities.parseDouble(longitude.getText().toString()).get());
-                        Double angle = angleBetweenLocations(loc, loc2, degrees);
-                        textView.setText(Double.toString(angle));
-                        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) home.getLayoutParams();
-                        layoutParams.circleAngle = angle.floatValue();
-                        home.setLayoutParams(layoutParams);
                     });
                 });
-        loadHomeLocation();
+
+        ListView listView = findViewById(R.id.listView1);
+        userPosAdapter =  new UserPosAdapter(this);
+        listView.setAdapter(userPosAdapter);
+        viewModel.getUsers().observe(this, userPosAdapter::setUsers);
+        userPosAdapter.notifyDataSetChanged();
+
     }
 
+//    Todo: Fix this part
+//    private void setupInput(UserViewModel viewModel) {
+//        var input = (EditText) findViewById(R.id.input_new_UID);
+//        input.setOnEditorActionListener((view, actionId, event) -> {
+//            // If the event isn't "done" or "enter", do nothing.
+//            if (actionId != EditorInfo.IME_ACTION_DONE) {
+//                return false;
+//            }
+//
+//            // Otherwise, create a new note, persist it...
+//            var title = input.getText().toString();
+//            var user = viewModel.getUser(title, this);
+//
+//            // ...wait for the database to finish persisting it...
+//            user.observe(this, userEntity -> {
+//                // ...stop observing.
+//
+//                user.removeObservers(this);
+//
+//                // ...and launch NoteActivity with it.
+//                // bind it to the list ?
+//            });
+//
+//            return true;
+//        });
+//    }
+
+    //Todo: Needs something similar for testing
+//    @SuppressLint("RestrictedApi")
+//    private void setupRecycler(UserAdapter adapter) {
+//        // We store the recycler view in a field _only_ because we will want to access it in tests.
+//        recyclerView = findViewById(R.id.recView);
+//        recyclerView.setLayoutManager(new RecyclerView.LayoutManager() {
+//            @Override
+//            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+//                return null;
+//            }
+//        });
+//        recyclerView.setLayoutManager(new userLayOutManager());
+//        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+//        recyclerView.setAdapter(adapter);
+//    }
+
+
+    private void getPermissions() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
+        }
+    }
+
+    // Todo: Move Location Set-Up here
+    private void setUpLoc() {
+    }
+
+    // Todo: Fix Orientation Set-Up
+    private void setUpOri() {
+        orientationService.getOrientation().
+                observe(this, ori ->
+                {
+                    float degrees = (float) Math.toDegrees((double) ori);
+//                    findViewById(R.id.arrowOri).setRotation(degrees);
+                });
+    }
+
+    private UserViewModel setUpViewModel() {
+        return new ViewModelProvider(this).get(UserViewModel.class);
+    }
+
+    // Todo: Update this
     private boolean inputValid() {
         TextView longitude = (TextView) findViewById(R.id.longitude);
         TextView latitude = (TextView) findViewById(R.id.latitude);
@@ -151,59 +167,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mainuser = mainUser.singleton();
-       if (mainuser != null) {
-           saveUser();
-           loadUser();
+       if (mainUser.exists()) {
+           saveMainUser();
+           loadMainUser();
        }
         orientationService.regSensorListeners();
     }
-    private void saveUser(){
+    private void saveMainUser(){
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("public_code", mainuser.public_code);
+        editor.putString("public_code", viewModel.getMainUserCode());
         editor.apply();
     }
 
-    private void loadUser(){
+    private void loadMainUser(){
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         public_code = preferences.getString("public_code","");
         TextView uidLabel =findViewById(R.id.UIDlable);
         uidLabel.setText("UID: "+public_code);
-        Log.i("PRE11", "loadUser: " + public_code);
+        if(public_code != null && !public_code.isEmpty()){
+            Log.i("CODE", "loadMainUser: "+ public_code);
+            viewModel.loadMainUser(public_code);
+        }
     }
 
-    private void loadHomeLocation() {
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        TextView latitude = findViewById(R.id.latitude);
-        String loadedLatitude = preferences.getString("latitude", "");
-        latitude.setText(loadedLatitude);
-
-        TextView longitude = findViewById(R.id.longitude);
-        String loadedLongitude = preferences.getString("longitude", "");
-        longitude.setText(loadedLongitude);
-
-        TextView locationLabel = findViewById(R.id.location_label);
-        String loadedLocation_label = preferences.getString("location_label", "");
-        locationLabel.setText(loadedLocation_label);
-    }
-
-    private void saveHomeLocation() {
-        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        TextView latitude = findViewById(R.id.latitude);
-        TextView longitude = findViewById(R.id.longitude);
-        TextView locationLabel = findViewById(R.id.location_label);
-        editor.putString("latitude", latitude.getText().toString());
-        editor.putString("longitude", longitude.getText().toString());
-        editor.putString("location_label", locationLabel.getText().toString());
-        editor.apply();
-    }
-
-    public void onSaveClicked(View view) {
-        saveHomeLocation();
-    }
     public boolean onSetOrientationClicked(View view){
         TextView orientation = findViewById(R.id.orientationText);
         Optional<Double> ori = Utilities.parseDouble(orientation.getText().toString());
@@ -219,12 +206,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onSelectLocationLabelClicked(View view) {
-        Spinner spinner = findViewById(R.id.spinner);
-        spinner.performClick();
-    }
-
-
     public void onAddFriendClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add friend");
@@ -235,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(uid);
         builder.setPositiveButton("confirm", (dialog, which) -> {
             String newUID = uid.getText().toString();
-            repo.getSynced(newUID);
+            viewModel.getUser(newUID, this);
         });
         builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
         builder.show();
