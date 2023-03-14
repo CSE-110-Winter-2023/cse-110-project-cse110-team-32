@@ -21,11 +21,14 @@ public class UserPosAdapter extends ArrayAdapter<User> {
     private final Context mContext;
     private List<User> users;
     private  float offset = 50;
+    private int maxZoomIdx;
+    private final float[] zoomLvls  = {1.0F, 10.0F, 500.0F};
 
     public UserPosAdapter(@NonNull Context context) {
         super(context, 0);
         this.mContext = context;
         this.mainuser= mainUser.singleton();
+        this.maxZoomIdx =1;
     }
 
     public void setUsers(List<User> usrs){
@@ -37,32 +40,58 @@ public class UserPosAdapter extends ArrayAdapter<User> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-//        Log.e("UserPosAdapter", "users list is null or empty");
-        View itemView = convertView;
-        if (itemView == null) {
-            itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.uesr_item, parent, false);
-        }
-        TextView label = itemView.findViewById(R.id.user_label);
-        ConstraintLayout con = itemView.findViewById(R.id.constID);
+        // getting the position of this friend
         User usr = users.get(position);
-        label.setText((usr.label));
-
-        float xOffset = (float) ((parent.getWidth()- 120.0)/2);
-        float yOffset = (float) ((parent.getHeight()-25.0)/2);
-        Log.i("Offsets", yOffset+"getView: "+ xOffset);
-
-//        Log.i("Making a view", "getView: " + position + "for \n"+ usr.toJSON());
-
-//        double cor = Angle.angleBetweenLocations(new Pair<Double,Double>((double) usr.latitude, (double) usr.longitude), new Pair<Double,Double>((double) mainuser.latitude, (double) mainuser.longitude), 0);
         android.util.Pair<Double, Double> mainUsrLoc = new Pair<>((double)mainuser.latitude, (double)mainuser.longitude);
         android.util.Pair<Double, Double> usrLoc = new Pair<>((double)usr.latitude, (double)usr.longitude);
         float[] vector = Utilities.getRelativeVector(mainUsrLoc, usrLoc);
-        float x =  vector[0], y = -vector[1];
-        Log.i("Pos",  usr.label +" : " + x+ xOffset + ", "+ y +yOffset + "dist:"+ Utilities.distanceInMiles(vector)+ "\n" +usr.toJSON());
+        vector[1] = -vector[1];
+        float x =  vector[0], y = vector[1];
+        float dist = Utilities.distanceInMiles(vector);
+        float len = Utilities.len(vector);
+        Log.i("Pos2",  usr.label +" : " + x + ", "+ y  + "dist:"+ Utilities.distanceInMiles(vector)+ "\n" +usr.toJSON());
+        View itemView = convertView;
 
-        itemView.setX(xOffset + x);
-        itemView.setY(yOffset + y);
+        // based on the distance, populate the correct layOut
+        if (dist > zoomLvls[maxZoomIdx]){
+            //displayed on the outer ring as a dot only.
+            if (itemView == null) {
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.outer_user_item, parent, false);
+            }
+            float xOffset = (float) ((parent.getWidth()- itemView.getWidth())/2);
+            float yOffset = (float) ((parent.getHeight()-itemView.getHeight())/2);
+            Log.i("Pos2",  usr.label + "dist: outerRing" + x + ", " + y + " is : "+dist);
+            x /= len;
+            y /= len;
+            x*= 300;
+            y*= 300;
+            Log.i("Pos2",  usr.label + "dist: outerRing" + x + ", " + y);
+            itemView.setX(xOffset + x);
+            itemView.setY(yOffset + y);
+        }else {
+            if (itemView == null) {
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.outer_user_item, parent, false);
+            }
+//            TextView label = itemView.findViewById(R.id.user_label);
+//            label.setText((usr.label));
+            x*= 30;
+            y*= 30;
+
+            float xOffset = (float) ((parent.getWidth() - itemView.getWidth()) / 2);
+            float yOffset = (float) ((parent.getHeight() - itemView.getHeight()) / 2);
+            if ((usr.public_code+"_private2").equals(mainuser.private_code)){
+                Log.i("Pos2", "getView: "+ usr.label);
+                itemView.setX(0);
+                itemView.setY(yOffset);
+            }
+            else {
+//                Log.i("Pos2", usr.label + " : inner" + mainuser.public_code);
+                itemView.setX(xOffset + x);
+                itemView.setY(yOffset + y);
+            }
+        }
         return itemView;
     }
     @Override

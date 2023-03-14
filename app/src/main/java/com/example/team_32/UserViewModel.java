@@ -41,8 +41,14 @@ public class UserViewModel extends AndroidViewModel {
 
     public void updateMain(android.util.Pair<Double, Double> loc) {
         if (mainuser != null){
+            if (!(Utilities.compFloat((float)(double)loc.first, mainuser.latitude)) && (!Utilities.compFloat((float)(double)loc.second, mainuser.longitude)))
+                return;
+
+            Log.i("MainUpdate", "updateMain: " + mainuser.latitude + " " + mainuser.longitude +" with " + (float)(double)loc.first + ", " +(float)(double)loc.second);
             mainuser.updateLoc(loc.first, loc.second);
             updateMain();
+        }else {
+            Log.i("MainUpdate", "updateMain: " +"null");
         }
     }
     public void updateMain() {

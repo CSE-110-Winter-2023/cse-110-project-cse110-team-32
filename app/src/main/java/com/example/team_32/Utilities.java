@@ -1,5 +1,7 @@
 package com.example.team_32;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
@@ -33,6 +35,7 @@ public class Utilities {
         double longitude1 = loc.second;
         double latitude2 = loc2.first;
         double longitude2 = loc2.second;
+        Log.i("Pos2", "Getting vector  between"+  loc + " and " + loc2);
         double[] xy1 = toCartesian(latitude1, longitude1);
         double[] xy2 = toCartesian(latitude2, longitude2);
         float dx = (float) (xy2[0] - xy1[0]);
@@ -45,7 +48,7 @@ public class Utilities {
     }
 
     public static float distanceInMiles(float[] vector){
-        return ((float) Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1]) *km_miles);
+        return (len(vector) *km_miles);
     }
 
     public static <T> void observeOnce(LiveData<T> liveData, Observer<T> observer) {
@@ -58,4 +61,11 @@ public class Utilities {
         });
     }
 
+    public static boolean compFloat(float one, float two) {
+        return  (two - one < 0.001 || one - two < 0.001);
+    }
+
+    public static float len(float[] vector) {
+        return (float) Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
+    }
 }
