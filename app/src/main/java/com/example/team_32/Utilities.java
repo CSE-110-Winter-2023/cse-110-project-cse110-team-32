@@ -5,8 +5,6 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class Utilities {
@@ -40,17 +38,14 @@ public class Utilities {
         double[] xy2 = toCartesian(latitude2, longitude2);
         float dx = (float) (xy2[0] - xy1[0]);
         float dy = (float)(xy2[1] - xy1[1]);
-//        double x = (longitude2 - longitude1) * Math.cos((latitude1 + latitude2) / 2);
-//        double y = latitude2 - latitude1;
-//        float[] result = {(float) x, (float) y};
-//        return result;
         return new float[]{dx, dy};
     }
 
     public static float distanceInMiles(float[] vector){
-        return (len(vector) *km_miles);
+        return (lenOfVector(vector) *km_miles);
     }
 
+    // Method to help observe any LiveData once
     public static <T> void observeOnce(LiveData<T> liveData, Observer<T> observer) {
         liveData.observeForever(new Observer<T>() {
             @Override
@@ -65,7 +60,7 @@ public class Utilities {
         return  (two - one < 0.001 || one - two < 0.001);
     }
 
-    public static float len(float[] vector) {
+    public static float lenOfVector(float[] vector) {
         return (float) Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
     }
 }
