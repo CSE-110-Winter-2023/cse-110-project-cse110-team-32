@@ -95,4 +95,5 @@ public class UserViewModel extends AndroidViewModel {
     public LiveData<List<User>> getUsers() {
         return userRepo.getAllLocal();
     }
+
 }
