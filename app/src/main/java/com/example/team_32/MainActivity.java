@@ -4,16 +4,11 @@ package com.example.team_32;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -25,15 +20,15 @@ import android.widget.TextView;
 
 import android.Manifest;
 
-import java.util.Collections;
 import java.util.Optional;
 
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
     private LocationService locationService;
     private String public_code;
-    private boolean first = true;
-    public UserPosAdapter userPosAdapter;
+
+    public RingAdapter ringAdapter;
+    public ListView ringView;
 
     UserViewModel viewModel;
     @Override
@@ -49,10 +44,9 @@ public class MainActivity extends AppCompatActivity {
             Intent userNameAct = new Intent(this, UsernameActivity.class);
             startActivity(userNameAct);
         }
-
+        System.err.println("Here");
         orientationService = OrientationService.singleton(this);
         setUpOri();
-        getPermissions();
         Log.i("Location", "Setting up");
         locationService = LocationService.singleton(this);
         Log.i("Location", "Done");
@@ -76,11 +70,11 @@ public class MainActivity extends AppCompatActivity {
                     });
                 });
 
-        ListView listView = findViewById(R.id.listView1);
-        userPosAdapter =  new UserPosAdapter(this);
-        listView.setAdapter(userPosAdapter);
-        viewModel.getUsers().observe(this, userPosAdapter::setUsers);
-        userPosAdapter.notifyDataSetChanged();
+        ringView = findViewById(R.id.listView1);
+        ringAdapter =  new RingAdapter(this);
+        ringView.setAdapter(ringAdapter);
+        viewModel.getUsers().observe(this, ringAdapter::setUsers);
+        ringAdapter.notifyDataSetChanged();
     }
 
 //    Todo: Fix this part

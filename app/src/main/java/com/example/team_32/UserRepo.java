@@ -1,6 +1,7 @@
 package com.example.team_32;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -43,7 +44,7 @@ public class UserRepo {
         };
 
         getLocal(public_code).observeForever(m_user::postValue);
-        getRemote(public_code).observeForever(updateFromRemote);
+       if (api != null) getRemote(public_code).observeForever(updateFromRemote);
         return m_user;
     }
 
@@ -53,10 +54,6 @@ public class UserRepo {
         return dao.get(public_code);
     }
 
-    public User getLocalMain(String public_code) {
-        return dao.getMain(public_code);
-    }
-
     public LiveData<List<User>> getAllLocal() {
         return dao.getAll();
     }
@@ -64,6 +61,14 @@ public class UserRepo {
     public void upsertLocal(User user) {
         user.updatedAt = System.currentTimeMillis()/1000;
         Log.i("PRE11", "upsertLocal: " + dao.upsert(user));
+    }
+    @VisibleForTesting
+    public void upsertAllLocal(List<User> usrs){
+        if (usrs == null)
+            return;
+        for (var usr: usrs) {
+            upsertLocal(usr);
+        }
     }
 
     public void deleteLocal(User user) {
@@ -77,7 +82,8 @@ public class UserRepo {
     // ==============
     // get the data for a user from the server
     public LiveData<User> getRemote(String public_code) {
-
+        if (api == null)
+            return null;
         //already having the user
         if (userCache.containsKey(public_code))
             return userCache.get(public_code);

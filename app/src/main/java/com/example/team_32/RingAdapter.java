@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-public class UserPosAdapter extends ArrayAdapter<User> {
+public class RingAdapter extends ArrayAdapter<User> {
     private mainUser mainuser;
     private final Context mContext;
     private List<User> users;
@@ -22,7 +22,7 @@ public class UserPosAdapter extends ArrayAdapter<User> {
     private int maxZoomIdx;
     private final float[] zoomLvls  = {1.0F, 10.0F, 500.0F};
 
-    public UserPosAdapter(@NonNull Context context) {
+    public RingAdapter(@NonNull Context context) {
         super(context, 0);
         this.mContext = context;
         this.mainuser= mainUser.singleton();
