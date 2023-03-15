@@ -3,6 +3,7 @@ package com.example.team_32;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
+import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Upsert;
 
@@ -27,4 +28,7 @@ public abstract class UserDao {
 
     @Delete
     public abstract int delete(User note);
+
+    @Upsert
+    public abstract List<Long> upsertAll (List<User> users);
 }

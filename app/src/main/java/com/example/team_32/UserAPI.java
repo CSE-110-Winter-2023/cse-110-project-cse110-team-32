@@ -67,22 +67,20 @@ public class UserAPI {
 //                "latitude": -48.876667,
 //                "longitude": -123.393333
 //        }
-        Log.i("API!", json);
+        Log.i("API! put MainUser", json);
         RequestBody b = RequestBody.create(json, JSON);
         var request = new Request.Builder()
                 .url("https://socialcompass.goto.ucsd.edu/location/" + public_code)
                 .method("PUT", b)
                 .build();
-        Log.i("API!", "did it ?");
         try (var response = client.newCall(request).execute()) {
             assert response.body() != null;
             var body = response.body().string();
-            Log.i("API!", body);
+            Log.i("API! put MainUser", body);
             return body;
         } catch (Exception e) {
-            Log.i("API!", "failed ? ");
             e.printStackTrace();
-            Log.i("API!", "failed 11? ");
+            Log.i("API! put MainUser", "failed");
             return "failed to send the put req!";
         }
     }

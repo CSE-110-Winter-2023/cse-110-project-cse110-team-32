@@ -1,6 +1,8 @@
 package com.example.team_32;
 
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -11,10 +13,18 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
 
 class TimestampAdapter extends TypeAdapter<Long> {
     @Override
@@ -64,8 +74,8 @@ public class User {
         this.latitude =  0;
         this.longitude =  0;
         this.updatedAt = 0;
-        var num = Math.floor(Math.random() *(198412 - 123 + 1) + 123);
-        String temp = label.replace(" ","-") +"-"+ Double.toString(num);
+        var num = "7623";
+        String temp = label.replace(" ","-") +"-"+ num;
         this.public_code = temp;
 //        gson = new GsonBuilder().setPrettyPrinting().create();
     }
@@ -76,8 +86,8 @@ public class User {
         this.latitude = latitude;
         this.longitude = longitude;
         this.updatedAt = updatedAt;
-        var num = Math.floor(Math.random() *(198412 - 123 + 1) + 123);
-        String temp = label.replace(" ","-") +"-"+ Double.toString(num);
+        var num = "7623";
+        String temp = label.replace(" ","-") +"-"+ num;
         this.public_code = temp;
 //        gson = new GsonBuilder().setPrettyPrinting().create();
     }
@@ -88,8 +98,8 @@ public class User {
         this.latitude = latitude;
         this.longitude = longitude;
         this.updatedAt = updatedAt;
-        var num = Math.floor(Math.random() *(198412 - 123 + 1) + 123);
-        String temp = label.replace(" ","-") +"-"+ Double.toString(num);
+        var num = "7623";
+        String temp = label.replace(" ","-") +"-"+ num;
         this.public_code = temp;
 //        gson = new GsonBuilder().setPrettyPrinting().create();
     }
@@ -102,6 +112,18 @@ public class User {
         return new GsonBuilder().setPrettyPrinting().create().toJson(this);
     }
 
+    public static List<User> loadJSON (Context context, String path){
+        try {
+            InputStream input = context.getAssets().open(path);
+            Reader reader = new InputStreamReader(input);
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<User>>(){}.getType();
+            return gson.fromJson(reader, type);
+        } catch (IOException e){
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 }
 
 

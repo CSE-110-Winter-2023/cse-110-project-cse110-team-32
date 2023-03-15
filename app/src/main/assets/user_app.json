@@ -1,1 +1,4 @@
-// empty file for now ?
+[
+  {"public_code":"seventh","label":"seventh","latitude":32.887957,"longitude":-117.241477,"is_listed_publicly":false,"created_at":"2023-03-14T22:00:26Z","updated_at":"2023-03-14T22:00:26Z"},
+  {"public_code":"Irvine","label":"Vegas","latitude":36.124154,"longitude":-115.22676,"is_listed_publicly":false,"created_at":"2023-03-14T06:06:40Z","updated_at":"2023-03-14T21:38:43Z"}
+]
