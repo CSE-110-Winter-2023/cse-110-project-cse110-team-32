@@ -1,6 +1,5 @@
 package com.example.team_32;
 
-import static com.example.team_32.Angle.angleBetweenLocations;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -14,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -40,9 +40,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        getPermissions();
         viewModel = setUpViewModel();
-        Context context = getApplication().getApplicationContext();
 
         loadMainUser();
         if (!mainUser.exists()){
@@ -54,11 +53,14 @@ public class MainActivity extends AppCompatActivity {
         orientationService = OrientationService.singleton(this);
         setUpOri();
         getPermissions();
+        Log.i("Location", "Setting up");
         locationService = LocationService.singleton(this);
+        Log.i("Location", "Done");
 //        setUpLoc();
         locationService.getLocation().
                 observe(this, loc ->
                 {
+                    Log.i("Location", String.valueOf(loc));
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
                     if (loc.first != null && loc.second != null) {
                             viewModel.updateMain(loc);
@@ -126,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getPermissions() {
+        Log.i("Location", "getPermissions: ");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
