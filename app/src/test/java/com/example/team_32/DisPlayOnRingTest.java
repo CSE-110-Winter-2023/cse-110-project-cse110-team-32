@@ -15,8 +15,6 @@ import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +26,7 @@ import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class DisPlayOnRingTest {
-    private static UserDatabase testDB;
+    private UserDatabase testDB;
     private UserDao testDao;
     private mainUser testMainUser;
     private UserRepo testRepo;
@@ -37,7 +35,6 @@ public class DisPlayOnRingTest {
 
     @Before
     public void resetDataBase(){
-        UserRepo.resetRepo();
         Context context = ApplicationProvider.getApplicationContext();
         testDB = Room.inMemoryDatabaseBuilder(context, UserDatabase.class).allowMainThreadQueries().build();
         UserDatabase.inject(testDB);
@@ -45,7 +42,7 @@ public class DisPlayOnRingTest {
         //Located at UCSD
         testMainUser = mainUser.singleton("testMainUser", 32.88006F, -117.23402F, 0);
         testDao = testDB.getDao();
-        testRepo = UserRepo.singleton(testDao, null);
+        testRepo = new UserRepo(testDao, null);
         testRepo.upsertLocal(testMainUser);
         testRepo.upsertAllLocal(users);
     }
@@ -99,10 +96,6 @@ public class DisPlayOnRingTest {
             assertEquals(View.GONE,label.getVisibility());
             assertEquals(View.VISIBLE,dot.getVisibility());
         });
-    }
-    @AfterClass
-    public static void closeDB(){
-        testDB.close();
     }
 }
 

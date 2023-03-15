@@ -6,7 +6,6 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -28,7 +27,7 @@ public class UserViewModel extends AndroidViewModel {
         Context context = getApplication().getApplicationContext();
         UserDatabase db = UserDatabase.provide(context);
         userDao = db.getDao();
-        userRepo = UserRepo.singleton(userDao, UserAPI.provide());
+        userRepo = new UserRepo(userDao, UserAPI.provide());
     }
 
     public void loadMainUser(String public_code) {
@@ -96,5 +95,4 @@ public class UserViewModel extends AndroidViewModel {
     public LiveData<List<User>> getUsers() {
         return userRepo.getAllLocal();
     }
-
 }
