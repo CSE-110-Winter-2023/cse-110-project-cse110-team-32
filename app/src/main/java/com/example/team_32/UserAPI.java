@@ -1,4 +1,5 @@
 package com.example.team_32;
+
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -14,8 +15,10 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+
 public class UserAPI {
     private volatile static UserAPI instance = null;
+    public static String server = "socialcompass.goto.ucsd.edu";
 
     private OkHttpClient client;
     public static final MediaType JSON
@@ -44,7 +47,7 @@ public class UserAPI {
         //            "updated_at": "2023-02-18T18:30:00Z"
         //    }
         var request = new Request.Builder()
-                .url("https://socialcompass.goto.ucsd.edu/location/" + public_code)
+                .url(String.format("https://%s/location/%s", server, public_code))
                 .method("GET", null)
                 .build();
 
@@ -58,6 +61,7 @@ public class UserAPI {
             return "failed to send the get req!";
         }
     }
+
     @WorkerThread
     public String putUser(String public_code, String json) {
 //    Uses the public code to Update/Insert the Main-user location
@@ -70,7 +74,7 @@ public class UserAPI {
         Log.i("API! put MainUser", json);
         RequestBody b = RequestBody.create(json, JSON);
         var request = new Request.Builder()
-                .url("https://socialcompass.goto.ucsd.edu/location/" + public_code)
+                .url(String.format("https://%s/location/%s", server, public_code))
                 .method("PUT", b)
                 .build();
         try (var response = client.newCall(request).execute()) {
@@ -95,7 +99,7 @@ public class UserAPI {
 
         RequestBody b = RequestBody.create(json, JSON);
         var request = new Request.Builder()
-                .url("https://socialcompass.goto.ucsd.edu/location/" + public_code)
+                .url(String.format("https://%s/location/%s", server, public_code))
                 .method("DELETE", b)
                 .build();
 
@@ -121,7 +125,7 @@ public class UserAPI {
 
         RequestBody b = RequestBody.create(json, JSON);
         var request = new Request.Builder()
-                .url("https://socialcompass.goto.ucsd.edu/location/" + public_code)
+                .url(String.format("https://%s/location/%s", server, public_code))
                 .method("PATCH", b)
                 .build();
 
@@ -146,7 +150,7 @@ public class UserAPI {
 
         RequestBody b = RequestBody.create(json, JSON);
         var request = new Request.Builder()
-                .url("https://socialcompass.goto.ucsd.edu/location/" + public_code)
+                .url(String.format("https://%s/location/%s", server, public_code))
                 .method("PATCH", b)
                 .build();
 

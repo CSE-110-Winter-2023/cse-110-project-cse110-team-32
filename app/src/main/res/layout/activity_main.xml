@@ -67,12 +67,24 @@
             android:id="@+id/submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="51dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="108dp"
             android:onClick="onSaveClicked"
             android:text="@string/saveBtn"
             android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/longitude"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_change_server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="51dp"
+            android:layout_marginTop="60dp"
+            android:onClick="onChangeServerClicked"
+            android:text="Change Server"
+            android:textSize="20sp"
+            app:layout_constraintStart_toEndOf="@+id/submit"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
@@ -150,7 +162,15 @@
             android:layout_marginBottom="16dp"
             android:onClick="onAddFriendClicked"
             app:srcCompat="@android:drawable/ic_input_add" />
-
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/change_server_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:onClick="onChangeServerClicked"
+            app:srcCompat="@android:drawable/ic_menu_preferences"
+            app:backgroundTint="#2196F3"
+            />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <ListView

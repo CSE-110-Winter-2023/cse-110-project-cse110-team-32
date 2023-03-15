@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.Manifest;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
     private OrientationService orientationService;
@@ -31,15 +33,17 @@ public class MainActivity extends AppCompatActivity {
     public ListView ringView;
 
     UserViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getPermissions();
+        setupServer();
         viewModel = setUpViewModel();
 
         loadMainUser();
-        if (!mainUser.exists()){
+        if (!mainUser.exists()) {
             Log.i("nameActivity", "Went there ? ");
             Intent userNameAct = new Intent(this, UsernameActivity.class);
             startActivity(userNameAct);
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("Location", String.valueOf(loc));
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
                     if (loc.first != null && loc.second != null) {
-                            viewModel.updateMain(loc);
+                        viewModel.updateMain(loc);
                     }
 
                     orientationService.getOrientation().observe(this, ori -> {
@@ -71,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         ringView = findViewById(R.id.listView1);
-        ringAdapter =  new RingAdapter(this);
+        ringAdapter = new RingAdapter(this);
         ringView.setAdapter(ringAdapter);
         viewModel.getUsers().observe(this, ringAdapter::setUsers);
         ringAdapter.notifyDataSetChanged();
@@ -165,35 +169,36 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-       if (mainUser.exists()) {
-           saveMainUser();
-           loadMainUser();
-           viewModel.reSyncAll();
-       }
+        if (mainUser.exists()) {
+            saveMainUser();
+            loadMainUser();
+            viewModel.reSyncAll();
+        }
         orientationService.regSensorListeners();
     }
-    private void saveMainUser(){
+
+    private void saveMainUser() {
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("public_code", viewModel.getMainUserCode());
         editor.apply();
     }
 
-    private void loadMainUser(){
+    private void loadMainUser() {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        public_code = preferences.getString("public_code","");
-        TextView uidLabel =findViewById(R.id.UIDlable);
-        uidLabel.setText("UID: "+public_code);
-        if(public_code != null && !public_code.isEmpty()){
-            Log.i("CODE", "loadMainUser: "+ public_code);
+        public_code = preferences.getString("public_code", "");
+        TextView uidLabel = findViewById(R.id.UIDlable);
+        uidLabel.setText("UID: " + public_code);
+        if (public_code != null && !public_code.isEmpty()) {
+            Log.i("CODE", "loadMainUser: " + public_code);
             viewModel.loadMainUser(public_code);
         }
     }
 
-    public boolean onSetOrientationClicked(View view){
+    public boolean onSetOrientationClicked(View view) {
         TextView orientation = findViewById(R.id.orientationText);
         Optional<Double> ori = Utilities.parseDouble(orientation.getText().toString());
-        if (!ori.isPresent()){
+        if (!ori.isPresent()) {
             orientationService.regSensorListeners();
             return false;
         } else {
@@ -219,5 +224,34 @@ public class MainActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+    public void onChangeServerClicked(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Change Server");
+        final EditText server = new EditText(this);
+        server.setHint("Server");
+        server.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(server);
+        server.setText(UserAPI.server);
+        builder.setPositiveButton("confirm", (dialog, which) -> {
+            String newServer = server.getText().toString();
+            // TODO: check if valid server?
+            UserAPI.server = newServer;
+            SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("server", newServer);
+            editor.apply();
+            Log.i("Server", "change server to: " + newServer);
+        });
+        builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+    public void setupServer(){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        String server = preferences.getString("server", "");
+        if (!server.isEmpty()) {
+            UserAPI.server = server;
+        }
     }
 }
