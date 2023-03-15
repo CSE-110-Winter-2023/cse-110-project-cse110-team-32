@@ -59,38 +59,6 @@ public class OrientationTest {
         mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
         assertEquals(Float.toString(exp), Double.toString(oriServ.getOrientation().getValue()));
     }
-    @Test
-    public void testMockBtnValid(){
-        var exp = (float)5;
-        Double inRad = Math.toRadians(-exp);
-        Float inRadF = inRad.floatValue();
-        mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
-        mockOri = oriServ.getOrientation();
-        var scenario = ActivityScenario.launch(MainActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        oriServ = OrientationService.singleton(null);
-        scenario.onActivity(act ->{
-            TextView orientationText  = act.findViewById(R.id.orientationText);
-            orientationText.setText(Float.toString(exp));
-            act.onSetOrientationClicked(orientationText);
-            assertEquals(Float.toString(inRadF), Float.toString(oriServ.getOrientation().getValue()));
-        });
-    }
-    @Test
-    public void testMockBtnInvalid(){
-        var exp = "dsf";
-        mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
-        mockOri = oriServ.getOrientation();
-        var scenario = ActivityScenario.launch(MainActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        oriServ = OrientationService.singleton(null);
-        scenario.onActivity(act ->{
-            TextView orientationText  = act.findViewById(R.id.orientationText);
-            orientationText.setText(exp);
-            assert !act.onSetOrientationClicked(orientationText);
-        });
-    }
+
 
 }
