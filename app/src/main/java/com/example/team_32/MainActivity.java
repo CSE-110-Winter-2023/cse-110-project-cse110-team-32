@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         orientationService = OrientationService.singleton(this);
         setUpOri();
-        viewModel.setUpGPSloss();
+        viewModel.setUpGPSloss(this);
         ringView = findViewById(R.id.listView1);
         ringAdapter = new RingAdapter(this);
         ringView.setAdapter(ringAdapter);

@@ -3,5 +3,8 @@
 
     <solid
         android:color="@color/black"/>
+    <size
+        android:width="7dp"
+        android:height="7dp" />
 
 </shape>

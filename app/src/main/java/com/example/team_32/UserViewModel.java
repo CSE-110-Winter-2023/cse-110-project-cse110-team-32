@@ -3,7 +3,11 @@ package com.example.team_32;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -41,14 +45,28 @@ public class UserViewModel extends AndroidViewModel {
             this.mainuser = mainUser.fromUser(userDao.getMain(public_code));
         }
     }
-    public void setUpGPSloss(){
+    public void setUpGPSloss(Activity main){
         ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
         exe.scheduleAtFixedRate(() -> {
             if (mainuser != null) {
                 var timeSinceLastUpdate = ((System.currentTimeMillis() / 1000) - mainuser.updatedAt);
-                if (timeSinceLastUpdate > 60L){
-                    Log.i("GPSloss", "time since signal loss:" + Math.floorDiv(timeSinceLastUpdate,60L) + "m");
-                }
+                var timeInMin = Math.floorDiv(timeSinceLastUpdate, 60L);
+                var timeInHours = Math.floorDiv(timeInMin, 60L);
+                    main.runOnUiThread(()->{
+                        Log.i("GPSLoss", "time in sec:" + timeSinceLastUpdate + " in min: "+ timeInMin + " time in h: "+ timeInHours);
+                        ImageView gpsDot  = main.findViewById(R.id.gpsIndicator);
+                        TextView gpsLabel  = main.findViewById(R.id.GPS_time);
+                        if (timeSinceLastUpdate > 60L){
+                        gpsDot.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+                        if (timeInHours >= 1){
+                            gpsLabel.setText(timeInHours+"h");
+                        }else if (timeInMin > 0 && timeInMin <=60){
+                            gpsLabel.setText(timeInMin+"m");
+                        }
+                    } else {
+                    gpsDot.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
+                    gpsLabel.setText("");
+                }});
             }
         }, 3, 3, TimeUnit.SECONDS);
     }
