@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        zoomState = 1;
+        loadZoomState();
         oneMileRing = findViewById(R.id.oneMileRing);
         tenMileRing = findViewById(R.id.tenMileRing);
         fiveHMileRing = findViewById(R.id.fiveHMileRing);
@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         orientationService.unregSensors();
+        saveZoomState();
     }
 
     @Override
@@ -128,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
             viewModel.reSyncAll();
         }
         orientationService.regSensorListeners();
+        loadZoomState();
+        setZoomState(zoomState);
     }
 
     private void saveMainUser() {
@@ -146,6 +149,17 @@ public class MainActivity extends AppCompatActivity {
             Log.i("CODE", "loadMainUser: " + public_code);
             viewModel.loadMainUser(public_code);
         }
+    }
+    private void saveZoomState(){
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("zoomState", zoomState);
+        editor.apply();
+    }
+    private void loadZoomState(){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        zoomState = preferences.getInt("zoomState", 1);
+
     }
 
     public boolean onSetOrientationClicked(View view) {
