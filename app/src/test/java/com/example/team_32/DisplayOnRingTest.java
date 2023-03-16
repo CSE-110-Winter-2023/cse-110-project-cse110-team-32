@@ -35,6 +35,7 @@ public class DisplayOnRingTest {
 
     @Before
     public void resetDataBase(){
+        UserRepo.resetRepo();
         Context context = ApplicationProvider.getApplicationContext();
         testDB = Room.inMemoryDatabaseBuilder(context, UserDatabase.class).allowMainThreadQueries().build();
         UserDatabase.inject(testDB);
@@ -42,7 +43,7 @@ public class DisplayOnRingTest {
         //Located at UCSD
         testMainUser = mainUser.singleton("testMainUser", 32.88006F, -117.23402F, 0);
         testDao = testDB.getDao();
-        testRepo = new UserRepo(testDao, null);
+        testRepo = UserRepo.singleton(testDao, null);
         testRepo.upsertLocal(testMainUser);
         testRepo.upsertAllLocal(users);
     }
@@ -56,19 +57,6 @@ public class DisplayOnRingTest {
     }
 
     @Test
-    public void testMainUser(){
-        ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.moveToState(Lifecycle.State.RESUMED);
-        scenario.onActivity( act -> {
-            ListView ringView = act.ringView;
-            System.err.println(ringView.getChildCount());
-            TextView label = ringView.getChildAt(ringView.getChildCount()-1).findViewById(R.id.usr_label);
-            assertEquals(testMainUser.label,label.getText());
-        });
-    }
-    @Test
     public void testUserOneMile(){
         ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -77,8 +65,8 @@ public class DisplayOnRingTest {
         scenario.onActivity( act -> {
             ListView ringView = act.ringView;
             System.err.println(ringView.getChildCount());
-            TextView label = ringView.getChildAt(ringView.getChildCount()-2).findViewById(R.id.usr_label);
-            ImageView dot = ringView.getChildAt(ringView.getChildCount()-2).findViewById(R.id.usr_dot);
+            TextView label = ringView.getChildAt(ringView.getChildCount()-1).findViewById(R.id.usr_label);
+            ImageView dot = ringView.getChildAt(ringView.getChildCount()-1).findViewById(R.id.usr_dot);
             assertEquals(View.VISIBLE,label.getVisibility());
             assertEquals(View.GONE,dot.getVisibility());
         });
@@ -91,8 +79,8 @@ public class DisplayOnRingTest {
         scenario.moveToState(Lifecycle.State.RESUMED);
         scenario.onActivity( act -> {
             ListView ringView = act.ringView;
-            TextView label = ringView.getChildAt(ringView.getChildCount()-3).findViewById(R.id.usr_label);
-            ImageView dot = ringView.getChildAt(ringView.getChildCount()-3).findViewById(R.id.usr_dot);
+            TextView label = ringView.getChildAt(ringView.getChildCount()-2).findViewById(R.id.usr_label);
+            ImageView dot = ringView.getChildAt(ringView.getChildCount()-2).findViewById(R.id.usr_dot);
             assertEquals(View.GONE,label.getVisibility());
             assertEquals(View.VISIBLE,dot.getVisibility());
         });

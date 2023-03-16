@@ -17,10 +17,17 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class UserRepo {
+    private static UserRepo instance = null;
+
     private final UserDao dao;
     private final UserAPI api;
     private final HashMap<String, LiveData<User>>userCache;
-
+    public static UserRepo singleton(UserDao dao, UserAPI api){
+        if (instance == null){
+            instance = new UserRepo(dao, api);
+        }
+        return instance;
+    }
     public UserRepo(UserDao dao, UserAPI api){
         this.dao = dao;
         this.api =api;
@@ -119,5 +126,10 @@ public class UserRepo {
         ex.execute(() -> {
             api.putUser(public_code, json);
         });
+    }
+    @VisibleForTesting
+    public static void resetRepo(){
+        instance = null;
+
     }
 }

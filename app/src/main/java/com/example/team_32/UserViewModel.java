@@ -27,7 +27,7 @@ public class UserViewModel extends AndroidViewModel {
         Context context = getApplication().getApplicationContext();
         UserDatabase db = UserDatabase.provide(context);
         userDao = db.getDao();
-        userRepo = new UserRepo(userDao, UserAPI.provide());
+        userRepo = UserRepo.singleton(userDao, UserAPI.provide());
     }
 
     public void loadMainUser(String public_code) {
