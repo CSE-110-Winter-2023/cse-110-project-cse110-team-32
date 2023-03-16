@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -44,7 +45,7 @@ public class LocationService implements LocationListener {
         }
 
         this.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                3L, 0.01F, this);
+                3L, 0, this);
     }
 
 
@@ -63,6 +64,7 @@ public class LocationService implements LocationListener {
         this.locationValue = mockDataSource;
     }
 
+    @VisibleForTesting
     protected void finalize()
     {
         instance = null;
