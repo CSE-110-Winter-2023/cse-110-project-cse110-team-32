@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RingAdapter extends ArrayAdapter<User> {
@@ -37,12 +38,24 @@ public class RingAdapter extends ArrayAdapter<User> {
     }
 
     public void setUsers(List<User> usrs){
-            this.users = usrs;
-            Log.i("getView", "calling a change" + this.users.size());
-            notifyDataSetChanged();
+        if (mainuser == null) {
+            if (!mainUser.exists()){
+                return;
+            }
+            mainuser = mainUser.singleton();
+        }
+        List<User> tempUsrs = new ArrayList<>();
+        for (User usr : usrs){
+            if ((usr.public_code + "_private2").equals(mainuser.private_code)) {
+                continue;
+            }
+            tempUsrs.add(usr);
+        }
+        this.users = tempUsrs;
+//        Log.i("getView", "calling a change" + this.users.size());
+        notifyDataSetChanged();
     }
 
-    // TODO: Move the cord. calculation to another function
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (mainuser == null){
@@ -60,7 +73,7 @@ public class RingAdapter extends ArrayAdapter<User> {
         float[] vector = Utilities.getRelativeVector(mainUsrLoc, usrLoc);
         vector[1] = -vector[1];
         float x =  vector[0], y = vector[1];
-        // getting distance and normalize vecotr
+        // getting distance and normalize vector
         float dist = Utilities.distanceInMiles(vector);
         float len = Utilities.lenOfVector(vector);
         x /= len;

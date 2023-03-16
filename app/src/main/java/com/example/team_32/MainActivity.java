@@ -65,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
         orientationService = OrientationService.singleton(this);
         setUpOri();
         Log.i("Location", "Setting up");
-        locationService = LocationService.singleton(this);
+
         Log.i("Location", "Done");
-        setUpLoc();
+//        setUpLoc();
 
         ringView = findViewById(R.id.listView1);
         ringAdapter = new RingAdapter(this);
@@ -81,10 +81,16 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
+            setUpLoc();
+        }else {
+            setUpLoc();
         }
     }
 
     private void setUpLoc() {
+        if (locationService == null){
+            locationService = LocationService.singleton(this);
+        }
         locationService.getLocation().
                 observe(this, loc ->
                 {
@@ -104,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 observe(this, ori ->
                 {
                     float degrees = (float) Math.toDegrees((double) ori);
-//                    findViewById(R.id.arrowOri).setRotation(degrees);
+                    findViewById(R.id.mainUserInd).setRotation(degrees);
                 });
     }
 
