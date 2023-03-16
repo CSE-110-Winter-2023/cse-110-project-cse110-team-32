@@ -6,6 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_friend_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginBottom="16dp"
+            android:onClick="onAddFriendClicked"
+            app:srcCompat="@android:drawable/ic_input_add" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/change_server_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:onClick="onChangeServerClicked"
+            app:backgroundTint="#2196F3"
+            app:srcCompat="@android:drawable/ic_menu_preferences" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/orentationCons"
         android:layout_width="0dp"
@@ -50,129 +78,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/locationCons"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="550dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
-            android:id="@+id/submit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="108dp"
-            android:onClick="onSaveClicked"
-            android:text="@string/saveBtn"
-            android:textSize="20sp"
-            app:layout_constraintStart_toEndOf="@+id/longitude"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/btn_change_server"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="51dp"
-            android:layout_marginTop="60dp"
-            android:onClick="onChangeServerClicked"
-            android:text="Change Server"
-            android:textSize="20sp"
-            app:layout_constraintStart_toEndOf="@+id/submit"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/longitude"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginTop="2dp"
-            android:ems="10"
-            android:hint="@string/longitudeHint"
-            android:inputType="numberSigned|numberDecimal"
-            android:minHeight="48dp"
-            android:textColorHint="#757575"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/latitude" />
-
-        <EditText
-            android:id="@+id/latitude"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="3dp"
-            android:ems="10"
-            android:hint="@string/latitudeHint"
-            android:inputType="numberSigned|numberDecimal"
-            android:minHeight="48dp"
-            android:textColorHint="#757575"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_new_UID" />
-
-        <TextView
-            android:id="@+id/UIDlable"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="120dp"
-            android:layout_marginEnd="120dp"
-            android:layout_marginBottom="6dp"
-            android:textAlignment="center"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/longitude"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <EditText
-            android:id="@+id/input_new_UID"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginTop="5dp"
-            android:ems="10"
-            android:hint="UID input"
-            android:minHeight="48dp"
-            android:textColorHint="#757575"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_friend_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:layout_marginBottom="16dp"
-            android:onClick="onAddFriendClicked"
-            app:srcCompat="@android:drawable/ic_input_add" />
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/change_server_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|start"
-            android:onClick="onChangeServerClicked"
-            app:srcCompat="@android:drawable/ic_menu_preferences"
-            app:backgroundTint="#2196F3"
-            />
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
     <ListView
         android:id="@+id/listView1"
         android:layout_width="0dp"
@@ -186,7 +91,7 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
     </ListView>
 
@@ -215,13 +120,80 @@
 
         <ImageView
             android:id="@+id/tenMileRing"
-            android:layout_width="900px"
-            android:layout_height="900px"
+            android:layout_width="750px"
+            android:layout_height="750px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/circle_shape" />
+
+        <ImageView
+            android:id="@+id/fiveHMileRing"
+            android:layout_width="950px"
+            android:layout_height="950px"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/circle_shape" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/locationCons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="550dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ZoomInBtn"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:layout_marginBottom="80dp"
+            android:clickable="true"
+            android:onClick="onZoomInClicked"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/btn_plus" />
+
+        <ImageView
+            android:id="@+id/ZoomOutBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="100dp"
+            android:layout_marginBottom="80dp"
+            android:clickable="true"
+            android:onClick="onZoomOutClicked"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ZoomInBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/btn_minus" />
+
+        <TextView
+            android:id="@+id/UIDlable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="120dp"
+            android:layout_marginEnd="120dp"
+            android:layout_marginBottom="6dp"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

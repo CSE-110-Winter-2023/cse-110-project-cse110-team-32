@@ -19,6 +19,8 @@ public class RingAdapter extends ArrayAdapter<User> {
     private final Context mContext;
     private List<User> users;
 
+    private int zoomState;
+
     private int maxZoomIdx;
     private final float[] zoomLvls  = {1.0F, 10.0F, 500.0F};
 
@@ -27,6 +29,11 @@ public class RingAdapter extends ArrayAdapter<User> {
         this.mContext = context;
         this.mainuser= mainUser.singleton();
         this.maxZoomIdx =1;
+    }
+    public void setZoomState(int zoomState){
+        Log.i("ZoomChanged", "setZoomState: " + zoomState);
+        this.zoomState = zoomState;
+        notifyDataSetChanged();
     }
 
     public void setUsers(List<User> usrs){
@@ -101,7 +108,7 @@ public class RingAdapter extends ArrayAdapter<User> {
 
             if ((usr.public_code + "_private2").equals(mainuser.private_code)) {
                 Log.i("Pos2", "getView: " + usr.label);
-                itemView.setX(xOffset);
+                itemView.setX(0);
                 itemView.setY(yOffset);
             } else {
                 Log.i("Pos2", usr.label + " : inner" + (x) + ", "+(y));

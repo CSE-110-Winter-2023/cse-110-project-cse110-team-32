@@ -2,6 +2,7 @@ package com.example.team_32;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -9,39 +10,56 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import android.Manifest;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
+    private int zoomState;
     private OrientationService orientationService;
     private LocationService locationService;
     private String public_code;
-
+    private ImageView oneMileRing;
+    private ImageView tenMileRing;
+    private ImageView fiveHMileRing;
     public RingAdapter ringAdapter;
     public ListView ringView;
+
+    private ViewGroup.LayoutParams nineFivePxWidth;
+    private ViewGroup.LayoutParams ninePxWidth;
+    private ViewGroup.LayoutParams sevenFivePxWidth;
+    private ViewGroup.LayoutParams fourFivePxWidth;
+
 
     UserViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        zoomState = 1;
+        oneMileRing = findViewById(R.id.oneMileRing);
+        tenMileRing = findViewById(R.id.tenMileRing);
+        fiveHMileRing = findViewById(R.id.fiveHMileRing);
+        setUpLayOutParams();
+
+        setZoomState(zoomState);
         getPermissions();
         setupServer();
         viewModel = setUpViewModel();
-
         loadMainUser();
         if (!mainUser.exists()) {
             Log.i("nameActivity", "Went there ? ");
@@ -54,25 +72,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("Location", "Setting up");
         locationService = LocationService.singleton(this);
         Log.i("Location", "Done");
-//        setUpLoc();
-        locationService.getLocation().
-                observe(this, loc ->
-                {
-                    Log.i("Location", String.valueOf(loc));
-                    String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
-                    if (loc.first != null && loc.second != null) {
-                        viewModel.updateMain(loc);
-                    }
-
-                    orientationService.getOrientation().observe(this, ori -> {
-                        float degrees = (float) Math.toDegrees((double) ori);
-                        TextView longitude = (TextView) findViewById(R.id.longitude);
-                        TextView latitude = (TextView) findViewById(R.id.latitude);
-                        if (!this.inputValid())
-                            return;
-                        Pair<Double, Double> loc2 = new Pair<>(Utilities.parseDouble(latitude.getText().toString()).get(), Utilities.parseDouble(longitude.getText().toString()).get());
-                    });
-                });
+        setUpLoc();
 
         ringView = findViewById(R.id.listView1);
         ringAdapter = new RingAdapter(this);
@@ -81,48 +81,28 @@ public class MainActivity extends AppCompatActivity {
         ringAdapter.notifyDataSetChanged();
     }
 
-//    Todo: Fix this part
-//    private void setupInput(UserViewModel viewModel) {
-//        var input = (EditText) findViewById(R.id.input_new_UID);
-//        input.setOnEditorActionListener((view, actionId, event) -> {
-//            // If the event isn't "done" or "enter", do nothing.
-//            if (actionId != EditorInfo.IME_ACTION_DONE) {
-//                return false;
-//            }
-//
-//            // Otherwise, create a new note, persist it...
-//            var title = input.getText().toString();
-//            var user = viewModel.getUser(title, this);
-//
-//            // ...wait for the database to finish persisting it...
-//            user.observe(this, userEntity -> {
-//                // ...stop observing.
-//
-//                user.removeObservers(this);
-//
-//                // ...and launch NoteActivity with it.
-//                // bind it to the list ?
-//            });
-//
-//            return true;
-//        });
-//    }
-
-    //Todo: Needs something similar for testing
-//    @SuppressLint("RestrictedApi")
-//    private void setupRecycler(UserAdapter adapter) {
-//        // We store the recycler view in a field _only_ because we will want to access it in tests.
-//        recyclerView = findViewById(R.id.recView);
-//        recyclerView.setLayoutManager(new RecyclerView.LayoutManager() {
-//            @Override
-//            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-//                return null;
-//            }
-//        });
-//        recyclerView.setLayoutManager(new userLayOutManager());
-//        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-//        recyclerView.setAdapter(adapter);
-//    }
+    private void setUpLayOutParams() {
+        if (nineFivePxWidth == null) {
+            nineFivePxWidth = fiveHMileRing.getLayoutParams();
+            nineFivePxWidth.width = 950;
+            nineFivePxWidth.height = 950;
+        }
+        if (ninePxWidth == null) {
+            ninePxWidth = fiveHMileRing.getLayoutParams();
+//            ninePxWidth.width = 900;
+//            ninePxWidth.height = 900;
+        }
+        if (sevenFivePxWidth == null) {
+            sevenFivePxWidth = tenMileRing.getLayoutParams();
+//            sevenFivePxWidth.width = 750;
+//            sevenFivePxWidth.height = 750;
+        }
+        if (fourFivePxWidth == null) {
+            fourFivePxWidth = oneMileRing.getLayoutParams();
+//            fourFivePxWidth.width = 450;
+//            fourFivePxWidth.height = 450;
+        }
+    }
 
 
     private void getPermissions() {
@@ -133,8 +113,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Todo: Move Location Set-Up here
     private void setUpLoc() {
+        locationService.getLocation().
+                observe(this, loc ->
+                {
+                    Log.i("Location updated", String.valueOf(loc));
+                    String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
+                    if (loc.first != null && loc.second != null) {
+                        viewModel.updateMain(loc);
+                    }
+                });
     }
 
     // Todo: Fix Orientation Set-Up
@@ -153,12 +141,6 @@ public class MainActivity extends AppCompatActivity {
         return new ViewModelProvider(this).get(UserViewModel.class);
     }
 
-    // Todo: Update this
-    private boolean inputValid() {
-        TextView longitude = (TextView) findViewById(R.id.longitude);
-        TextView latitude = (TextView) findViewById(R.id.latitude);
-        return Utilities.parseDouble(longitude.getText().toString()).isPresent() && Utilities.parseDouble(latitude.getText().toString()).isPresent();
-    }
 
     @Override
     protected void onPause() {
@@ -236,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
         server.setText(UserAPI.server);
         builder.setPositiveButton("confirm", (dialog, which) -> {
             String newServer = server.getText().toString();
-            // TODO: check if valid server?
             UserAPI.server = newServer;
             SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -246,6 +227,78 @@ public class MainActivity extends AppCompatActivity {
         });
         builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+
+    // state 0: only the 1 mile rings
+    // state 1: 1,10 miles rings
+    // state 2: 1, 10, 500 miles rings
+    public void onZoomInClicked(View view){
+        if (zoomState == 0)
+            return;
+        zoomState--;
+        findViewById(R.id.ZoomOutBtn).setClickable(true);
+        if (zoomState == 0){
+            findViewById(R.id.ZoomInBtn).setClickable(false);
+        }
+        setZoomState(zoomState);
+    }
+    public void onZoomOutClicked(View view){
+        if (zoomState == 2)
+            return;
+        zoomState++;
+        findViewById(R.id.ZoomInBtn).setClickable(true);
+        if (zoomState == 2){
+            findViewById(R.id.ZoomOutBtn).setClickable(false);
+        }
+        setZoomState(zoomState);
+    }
+    private void setZoomState(int zoomState) {
+        if (zoomState == 0){
+            // only 1 mile ring
+            fiveHMileRing.setVisibility(View.GONE);
+            tenMileRing.setVisibility(View.GONE);
+            ////////////////////
+            ViewGroup.LayoutParams nineFivePxPara = oneMileRing.getLayoutParams();
+            nineFivePxPara.width = 950;
+            nineFivePxPara.height = 950;
+            ///////////////////
+            oneMileRing.setLayoutParams(nineFivePxPara);
+        } else if (zoomState == 1) {
+            fiveHMileRing.setVisibility(View.GONE);
+            tenMileRing.setVisibility(View.VISIBLE);
+            /////////////////////
+            ViewGroup.LayoutParams ninePxPara = tenMileRing.getLayoutParams();
+            ninePxPara.width = 900;
+            ninePxPara.height = 900;
+            ViewGroup.LayoutParams fourFivePxPara = oneMileRing.getLayoutParams();
+            fourFivePxPara.width = 450;
+            fourFivePxPara.height = 450;
+            ////////////////////////
+            Log.i("LayOut", tenMileRing.getMeasuredWidth() + " " + tenMileRing.getMeasuredHeight() + " " + tenMileRing.getX() + " ," + tenMileRing.getY());
+            tenMileRing.setLayoutParams(ninePxPara);
+            Log.i("LayOut", tenMileRing.getMeasuredWidth() + " " + tenMileRing.getMeasuredHeight() + " " + tenMileRing.getX() + " ," + tenMileRing.getY());
+            oneMileRing.setLayoutParams(fourFivePxPara);
+        }else {
+            fiveHMileRing.setVisibility(View.VISIBLE);
+            tenMileRing.setVisibility(View.VISIBLE);
+            /////////////////////
+            ViewGroup.LayoutParams nineFivePxPara = fiveHMileRing.getLayoutParams();
+            nineFivePxPara.width = 950;
+            nineFivePxPara.height = 950;
+            ViewGroup.LayoutParams sevenFivePxPara = tenMileRing.getLayoutParams();
+            sevenFivePxPara.width = 750;
+            sevenFivePxPara.height = 750;
+            ViewGroup.LayoutParams fourFivePxPara = oneMileRing.getLayoutParams();
+            fourFivePxPara.width = 450;
+            fourFivePxPara.height = 450;
+            /////////////////////
+            fiveHMileRing.setLayoutParams(nineFivePxPara);
+            tenMileRing.setLayoutParams(sevenFivePxPara);
+            oneMileRing.setLayoutParams(fourFivePxPara);
+        }
+        if (ringAdapter != null)
+            ringAdapter.setZoomState(zoomState);
     }
     public void setupServer(){
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
