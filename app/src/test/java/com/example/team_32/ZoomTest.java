@@ -19,7 +19,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowContextWrapper;
 
 @RunWith(RobolectricTestRunner.class)
-public class ZoomTesting {
+public class ZoomTest {
     MainActivity mainActivity;
     @Before
     public void grantPermissions(){

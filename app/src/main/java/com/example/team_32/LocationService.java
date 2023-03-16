@@ -71,4 +71,12 @@ public class LocationService implements LocationListener {
         activity = null;
         locationValue =null;
     }
+    @VisibleForTesting
+    public static LocationService singleton(){
+        return instance;
+    }
+    @VisibleForTesting
+    public void disable(){
+        unregisterLocationListener();
+    }
 }
