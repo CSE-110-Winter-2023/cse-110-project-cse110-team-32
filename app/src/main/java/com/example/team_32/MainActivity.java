@@ -37,11 +37,6 @@ public class MainActivity extends AppCompatActivity {
     public RingAdapter ringAdapter;
     public ListView ringView;
 
-    private ViewGroup.LayoutParams nineFivePxWidth;
-    private ViewGroup.LayoutParams ninePxWidth;
-    private ViewGroup.LayoutParams sevenFivePxWidth;
-    private ViewGroup.LayoutParams fourFivePxWidth;
-
 
     UserViewModel viewModel;
 
@@ -54,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         oneMileRing = findViewById(R.id.oneMileRing);
         tenMileRing = findViewById(R.id.tenMileRing);
         fiveHMileRing = findViewById(R.id.fiveHMileRing);
-        setUpLayOutParams();
 
+        Log.i("ZOOM", "SETTING " + zoomState);
         setZoomState(zoomState);
         getPermissions();
         setupServer();
@@ -66,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             Intent userNameAct = new Intent(this, UsernameActivity.class);
             startActivity(userNameAct);
         }
-        System.err.println("Here");
+
         orientationService = OrientationService.singleton(this);
         setUpOri();
         Log.i("Location", "Setting up");
@@ -80,30 +75,6 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getUsers().observe(this, ringAdapter::setUsers);
         ringAdapter.notifyDataSetChanged();
     }
-
-    private void setUpLayOutParams() {
-        if (nineFivePxWidth == null) {
-            nineFivePxWidth = fiveHMileRing.getLayoutParams();
-            nineFivePxWidth.width = 950;
-            nineFivePxWidth.height = 950;
-        }
-        if (ninePxWidth == null) {
-            ninePxWidth = fiveHMileRing.getLayoutParams();
-//            ninePxWidth.width = 900;
-//            ninePxWidth.height = 900;
-        }
-        if (sevenFivePxWidth == null) {
-            sevenFivePxWidth = tenMileRing.getLayoutParams();
-//            sevenFivePxWidth.width = 750;
-//            sevenFivePxWidth.height = 750;
-        }
-        if (fourFivePxWidth == null) {
-            fourFivePxWidth = oneMileRing.getLayoutParams();
-//            fourFivePxWidth.width = 450;
-//            fourFivePxWidth.height = 450;
-        }
-    }
-
 
     private void getPermissions() {
         Log.i("Location", "getPermissions: ");
@@ -290,8 +261,8 @@ public class MainActivity extends AppCompatActivity {
             sevenFivePxPara.width = 750;
             sevenFivePxPara.height = 750;
             ViewGroup.LayoutParams fourFivePxPara = oneMileRing.getLayoutParams();
-            fourFivePxPara.width = 450;
-            fourFivePxPara.height = 450;
+            fourFivePxPara.width = 350;
+            fourFivePxPara.height = 350;
             /////////////////////
             fiveHMileRing.setLayoutParams(nineFivePxPara);
             tenMileRing.setLayoutParams(sevenFivePxPara);

@@ -45,7 +45,7 @@ public class LocationService implements LocationListener {
         }
 
         this.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                3L, 0.0001F, this);
+                3L, 0, this);
     }
 
 
