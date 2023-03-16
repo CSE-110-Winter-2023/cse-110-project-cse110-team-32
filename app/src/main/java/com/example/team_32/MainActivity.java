@@ -168,21 +168,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public boolean onSetOrientationClicked(View view) {
-        TextView orientation = findViewById(R.id.orientationText);
-        Optional<Double> ori = Utilities.parseDouble(orientation.getText().toString());
-        if (!ori.isPresent()) {
-            orientationService.regSensorListeners();
-            return false;
-        } else {
-            orientationService.unregSensors();
-            Double inRad = Math.toRadians(-ori.get());
-            System.out.println(inRad);
-            orientationService.setOrientationValue(inRad.floatValue());
-            return true;
-        }
-    }
-
     public void onAddFriendClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add friend");

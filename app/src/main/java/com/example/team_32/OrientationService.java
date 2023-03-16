@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -92,7 +93,7 @@ public class OrientationService implements SensorEventListener {
     public MutableLiveData<Float> getOrientation(){return this.azimuth;}
     public void setOrientationValue(Float o){this.azimuth.setValue(o);}
 
-
+    @VisibleForTesting
     public void setMockOrientation(MutableLiveData<Float> mockSource){
         unregSensors();
         this.azimuth = mockSource;
