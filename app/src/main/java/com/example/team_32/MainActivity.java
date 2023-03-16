@@ -27,7 +27,7 @@ import android.Manifest;
 import java.util.Optional;
 
 public class MainActivity extends AppCompatActivity {
-    private int zoomState;
+    public int zoomState;
     private OrientationService orientationService;
     private LocationService locationService;
     private String public_code;

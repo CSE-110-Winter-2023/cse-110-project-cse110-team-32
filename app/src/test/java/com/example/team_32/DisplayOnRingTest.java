@@ -25,7 +25,7 @@ import org.robolectric.shadows.ShadowContextWrapper;
 import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
-public class DisPlayOnRingTest {
+public class DisplayOnRingTest {
     private UserDatabase testDB;
     private UserDao testDao;
     private mainUser testMainUser;
