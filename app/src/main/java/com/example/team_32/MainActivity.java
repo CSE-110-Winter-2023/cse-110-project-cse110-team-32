@@ -25,6 +25,9 @@ import android.widget.TextView;
 import android.Manifest;
 
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     public int zoomState;
@@ -36,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView fiveHMileRing;
     public RingAdapter ringAdapter;
     public ListView ringView;
+
+    private mainUser mainuser;
 
 
     UserViewModel viewModel;
@@ -64,11 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         orientationService = OrientationService.singleton(this);
         setUpOri();
-        Log.i("Location", "Setting up");
-
-        Log.i("Location", "Done");
-//        setUpLoc();
-
+        viewModel.setUpGPSloss();
         ringView = findViewById(R.id.listView1);
         ringAdapter = new RingAdapter(this);
         ringView.setAdapter(ringAdapter);
@@ -276,6 +277,8 @@ public class MainActivity extends AppCompatActivity {
         if (ringAdapter != null)
             ringAdapter.setZoomState(zoomState);
     }
+
+
     public void setupServer(){
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         String server = preferences.getString("server", "");

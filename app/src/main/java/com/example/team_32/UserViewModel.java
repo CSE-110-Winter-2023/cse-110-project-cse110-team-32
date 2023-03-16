@@ -13,6 +13,9 @@ import androidx.lifecycle.Observer;
 
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class UserViewModel extends AndroidViewModel {
@@ -37,6 +40,17 @@ public class UserViewModel extends AndroidViewModel {
         }else {
             this.mainuser = mainUser.fromUser(userDao.getMain(public_code));
         }
+    }
+    public void setUpGPSloss(){
+        ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
+        exe.scheduleAtFixedRate(() -> {
+            if (mainuser != null) {
+                var timeSinceLastUpdate = ((System.currentTimeMillis() / 1000) - mainuser.updatedAt);
+                if (timeSinceLastUpdate > 60L){
+                    Log.i("GPSloss", "time since signal loss:" + Math.floorDiv(timeSinceLastUpdate,60L) + "m");
+                }
+            }
+        }, 3, 3, TimeUnit.SECONDS);
     }
 
     public void updateMain(android.util.Pair<Double, Double> loc) {
