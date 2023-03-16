@@ -3,6 +3,7 @@ package com.example.team_32;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.room.Ignore;
 
 import com.google.gson.ExclusionStrategy;
@@ -59,6 +60,11 @@ public class mainUser extends User{
     public void updateLoc(@NonNull Double first, @NonNull Double second) {
         latitude =  first.floatValue();
         longitude =  second.floatValue();
+    }
+    @Ignore
+    @VisibleForTesting
+    public static void resetMain(){
+        instance = null;
     }
 }
 

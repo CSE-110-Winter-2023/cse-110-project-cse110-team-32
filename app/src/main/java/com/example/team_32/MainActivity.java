@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
     public RingAdapter ringAdapter;
     public ListView ringView;
 
-    private mainUser mainuser;
-
 
     UserViewModel viewModel;
 
@@ -50,12 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadZoomState();
+//        loadZoomState();
         oneMileRing = findViewById(R.id.oneMileRing);
         tenMileRing = findViewById(R.id.tenMileRing);
         fiveHMileRing = findViewById(R.id.fiveHMileRing);
 
         Log.i("ZOOM", "SETTING " + zoomState);
+        zoomState = 1;
         setZoomState(zoomState);
         getPermissions();
         setupServer();
@@ -95,9 +94,11 @@ public class MainActivity extends AppCompatActivity {
         locationService.getLocation().
                 observe(this, loc ->
                 {
+                    System.err.println("HERE?");
                     Log.i("Location updated", String.valueOf(loc));
                     String text = String.format("Lat: %.2f, Lon: %.2f", loc.first, loc.second);
                     if (loc.first != null && loc.second != null) {
+                        System.err.println("Updating Location");
                         viewModel.updateMain(loc);
                     }
                 });
@@ -124,11 +125,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         orientationService.unregSensors();
-        saveZoomState();
+//        saveZoomState();
     }
 
     @Override
     protected void onResume() {
+        Log.i("Setting Zoom", "onResume: ");
         super.onResume();
         if (mainUser.exists()) {
             saveMainUser();
@@ -136,8 +138,8 @@ public class MainActivity extends AppCompatActivity {
             viewModel.reSyncAll();
         }
         orientationService.regSensorListeners();
-        loadZoomState();
-        setZoomState(zoomState);
+//        loadZoomState();
+//        setZoomState(zoomState);
     }
 
     private void saveMainUser() {
@@ -148,11 +150,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMainUser() {
+        if (mainUser.exists())
+            return;
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         public_code = preferences.getString("public_code", "");
         TextView uidLabel = findViewById(R.id.UIDlable);
         uidLabel.setText("UID: " + public_code);
         if (public_code != null && !public_code.isEmpty()) {
+            System.out.println("HERE!!" + mainUser.exists());
             Log.i("CODE", "loadMainUser: " + public_code);
             viewModel.loadMainUser(public_code);
         }
@@ -231,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
         setZoomState(zoomState);
     }
     private void setZoomState(int zoomState) {
+        Log.i("Setting ZoomState", String.valueOf(zoomState));
         if (zoomState == 0){
             // only 1 mile ring
             fiveHMileRing.setVisibility(View.GONE);
