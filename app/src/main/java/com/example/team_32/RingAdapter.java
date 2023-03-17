@@ -103,14 +103,11 @@ public class RingAdapter extends ArrayAdapter<User> {
         if (itemView == null) {
             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.uesr_item, parent, false);
         }
-        //
         TextView label = itemView.findViewById(R.id.usr_label);
         label.setText(usr.label);
         ImageView dot = itemView.findViewById(R.id.usr_dot);
-
         float xOffset = (float) ((parent.getWidth() - itemView.getWidth()) / 2);
         float yOffset = (float) ((parent.getHeight() - itemView.getHeight()) / 2);
-
         Log.i("ZOOM", usr.label + " in " + dist + "\n" + usr.toJSON());
 
         // based on the distance and zoom state populate the correct layOut
@@ -460,7 +457,6 @@ public class RingAdapter extends ArrayAdapter<User> {
         itemView.setY(yOffset + y);
         return itemView;
     }
-
     @Override
     public int getCount() {
         if (this.users == null) return 0;
