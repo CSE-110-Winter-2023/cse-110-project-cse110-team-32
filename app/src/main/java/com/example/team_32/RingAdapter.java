@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -341,6 +342,14 @@ public class RingAdapter extends ArrayAdapter<User> {
     public int getCount() {
         if (this.users == null) return 0;
         return this.users.size();
+    }
+    @VisibleForTesting
+    public void resetMain (){
+        mainuser = mainUser.singleton();
+    }
+    @VisibleForTesting
+    public void getMainJson (){
+        System.out.println(mainuser.toJSON());
     }
 
 }

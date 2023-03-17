@@ -37,9 +37,6 @@ public class UserViewModel extends AndroidViewModel {
 
     private final PorterDuffColorFilter redColor = new PorterDuffColorFilter(Color.RED, PorterDuff.Mode.ADD);
 
-
-    private final LightingColorFilter colorGreen = new LightingColorFilter(Color.GREEN, 0);
-    private final LightingColorFilter colorRed = new LightingColorFilter(Color.RED, 0);
     private final ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
 
     public UserViewModel(@NonNull Application application) {
@@ -48,6 +45,9 @@ public class UserViewModel extends AndroidViewModel {
         UserDatabase db = UserDatabase.provide(context);
         userDao = db.getDao();
         userRepo = UserRepo.singleton(userDao, UserAPI.provide());
+        if (mainUser.exists()){
+            mainuser = mainUser.singleton();
+        }
     }
 
     public void loadMainUser(String public_code) {
@@ -97,7 +97,7 @@ public class UserViewModel extends AndroidViewModel {
                     }
                 });
             }
-        }, 0, 6000, TimeUnit.MILLISECONDS);
+        }, 0, 4000, TimeUnit.MILLISECONDS);
     }
 
     public void updateMain(android.util.Pair<Double, Double> loc) {
@@ -169,6 +169,12 @@ public class UserViewModel extends AndroidViewModel {
     @VisibleForTesting
     public void closeExe() {
         exe.shutdown();
+        System.err.println("Cloooosed");
+    }
+    @VisibleForTesting
+    public void resetMainUser(){
+        mainuser = null;
+        mainuser = mainUser.singleton();
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.team_32;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -33,7 +34,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_CODE = 1;
     private final ActivityResultLauncher<Intent> secondActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView oneMileRing;
     private ImageView tenMileRing;
     private ImageView fiveHMileRing;
+    private ImageView fiveHPMileRing;
     public RingAdapter ringAdapter;
     public ListView ringView;
 
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         oneMileRing = findViewById(R.id.oneMileRing);
         tenMileRing = findViewById(R.id.tenMileRing);
         fiveHMileRing = findViewById(R.id.fiveHMileRing);
+        fiveHPMileRing = findViewById(R.id.fiveHPMileRing);
 
         Log.i("ZOOM", "SETTING " + zoomState);
         zoomState = 1;
@@ -214,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Change Server");
         final EditText server = new EditText(this);
         server.setHint("Server");
+        server.setId(R.id.edittext_uid);
         server.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(server);
         server.setText(UserAPI.server);
@@ -233,9 +236,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // state 0: only the 1 mile rings
-    // state 1: 1,10 miles rings
-    // state 2: 1, 10, 500 miles rings
+
     public void onZoomInClicked(View view){
         if (zoomState == 0)
             return;
@@ -256,6 +257,11 @@ public class MainActivity extends AppCompatActivity {
         }
         setZoomState(zoomState);
     }
+
+    // state 0: only the 1 mile rings
+    // state 1: 1, 10 miles rings
+    // state 2: 1, 10, 500 miles rings
+    // state 3: 1, 10, 500, 500+ miles rings
     private void setZoomState(int zoomState) {
         Log.i("Setting ZoomState", String.valueOf(zoomState));
         if (zoomState == 0){
@@ -312,6 +318,15 @@ public class MainActivity extends AppCompatActivity {
         if (!server.isEmpty()) {
             UserAPI.server = server;
         }
+    }
+
+    @VisibleForTesting
+    public void closeExeInViewModel(){
+    viewModel.closeExe();
+    }
+    @VisibleForTesting
+    public void resetMainViewModel(){
+        viewModel.resetMainUser();
     }
 
 }
