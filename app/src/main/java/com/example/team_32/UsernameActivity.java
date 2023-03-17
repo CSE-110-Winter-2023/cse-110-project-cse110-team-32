@@ -2,6 +2,7 @@ package com.example.team_32;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,12 +22,13 @@ public class UsernameActivity extends AppCompatActivity {
         String name= usrName.getText().toString();
         Log.d("nameActivity", String.valueOf(name.isEmpty()));
         if (usrName.getText().toString().isEmpty()){
-            Log.d("nameActivity", "onUserNameSaveBtnClicked: but not name is given");
+            Log.d("nameActivity", "onUserNameSaveBtnClicked: but no name is given");
 
         }else {
             Log.d("nameActivity", "onUserNameSaveBtnClicked: ");
-            var a = mainUser.singleton(usrName.getText().toString(), 0, 0, 0);
-            Log.d("nameActivity", "Done ?");
+            Intent resultData = new Intent();
+            resultData.putExtra("result_key", usrName.getText().toString());
+            setResult(RESULT_OK, resultData);
             finish();
         }
     }

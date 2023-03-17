@@ -29,6 +29,7 @@ public class Utilities {
 
     public static float[] getRelativeVector(android.util.Pair<Double, Double> loc,
                                             android.util.Pair<Double, Double> loc2) {
+
         double latitude1 = loc.first;
         double longitude1 = loc.second;
         double latitude2 = loc2.first;
@@ -38,6 +39,7 @@ public class Utilities {
         double[] xy2 = toCartesian(latitude2, longitude2);
         float dx = (float) (xy2[0] - xy1[0]);
         float dy = (float)(xy2[1] - xy1[1]);
+        System.out.println("Heerrre ?" + dx + ", "+ dy);
         return new float[]{dx, dy};
     }
 

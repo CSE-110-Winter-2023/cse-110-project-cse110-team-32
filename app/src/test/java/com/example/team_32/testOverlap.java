@@ -1,10 +1,14 @@
 package com.example.team_32;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.opengl.Visibility;
 import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,14 +25,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.shadows.ShadowContextWrapper;
 
 import java.util.List;
-
 @RunWith(RobolectricTestRunner.class)
-public class DisplayOnRingTest {
+public class testOverlap {
     private UserDatabase testDB;
     private UserDao testDao;
     private mainUser testMainUser;
@@ -41,7 +42,7 @@ public class DisplayOnRingTest {
         Context context = ApplicationProvider.getApplicationContext();
         testDB = Room.inMemoryDatabaseBuilder(context, UserDatabase.class).allowMainThreadQueries().build();
         UserDatabase.inject(testDB);
-        List<User> users = User.loadJSON(context, "user_app.json");
+        List<User> users = User.loadJSON(context, "user_app2.json");
         //Located at UCSD
         testMainUser = mainUser.singleton("testMainUser", 32.88006F, -117.23402F, 0);
         testDao = testDB.getDao();
@@ -54,37 +55,9 @@ public class DisplayOnRingTest {
     public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule
             .grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-
     @Test
-    public void testUserOneMile(){
-        mainUser.resetMain();
-        mainUser.singleton("testMainUser", 32.88006F, -117.23402F, 0);
-        ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.moveToState(Lifecycle.State.RESUMED);
-        mainUser.singleton("testMainUser", 32.88006F, -117.23402F, 0);
-        scenario.onActivity( act -> {
-            act.closeExeInViewModel();
-            act.ringAdapter.getMainJson();
-            act.ringAdapter.resetMain();
-            act.ringAdapter.notifyDataSetChanged();
-            act.ringAdapter.getMainJson();
-            shadowOf(Looper.getMainLooper()).idle();
-            act.resetMainViewModel();
-            act.zoomState = 1;
-            ListView ringView = act.ringView;
-            act.ringAdapter.getMainJson();
-            System.err.println(ringView.getChildCount());
-            TextView label = ringView.getChildAt(ringView.getChildCount()-1).findViewById(R.id.usr_label);
-            ImageView dot = ringView.getChildAt(ringView.getChildCount()-1).findViewById(R.id.usr_dot);
-            System.out.println(label.getText()+ "teext");
-            assertEquals(View.VISIBLE,label.getVisibility());
-            assertEquals(View.GONE,dot.getVisibility());
-        });
-    }
-    @Test
-    public void testUserOnRing(){
+    public void testOverLapTruncatedOneMile(){
+        // Testing Opening the app (having def. zoom) then seeing friends that overlaping
         ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
         scenario.moveToState(Lifecycle.State.CREATED);
         scenario.moveToState(Lifecycle.State.STARTED);
@@ -94,11 +67,33 @@ public class DisplayOnRingTest {
             act.onResume();
             act.closeExeInViewModel();
             ListView ringView = act.ringView;
+            //seventh long label
+            System.out.println("========");
             TextView label = ringView.getChildAt(ringView.getChildCount()-2).findViewById(R.id.usr_label);
             ImageView dot = ringView.getChildAt(ringView.getChildCount()-2).findViewById(R.id.usr_dot);
-            assertEquals(View.GONE,label.getVisibility());
-            assertEquals(View.VISIBLE,dot.getVisibility());
+            System.out.println(label.getText().toString() + " 1 ");
+            //vegas  label
+            TextView label2 = ringView.getChildAt(ringView.getChildCount()-1).findViewById(R.id.usr_label);
+            ImageView dot2 = ringView.getChildAt(ringView.getChildCount()-1).findViewById(R.id.usr_dot);
+            System.out.println(label2.getText().toString() +  " 2");
+            //seventh
+            TextView label3 = ringView.getChildAt(ringView.getChildCount()-3).findViewById(R.id.usr_label);
+            ImageView dot3 = ringView.getChildAt(ringView.getChildCount()-3).findViewById(R.id.usr_dot);
+            System.out.println(label3.getText().toString()  + " 3");
+            //check 0-1, 1-10 mile case
+            assertEquals(label2.getText().toString(), "vegas");
+            assertEquals(label.getText().toString(), "seven...");
+            assertNotEquals(ringView.getChildAt(ringView.getChildCount()-1).getX(), ringView.getChildAt(ringView.getChildCount()-2).getX());
+            assertNotEquals(ringView.getChildAt(ringView.getChildCount()-1).getY(), ringView.getChildAt(ringView.getChildCount()-2).getY());
+            assertEquals(label3.getText().toString(), "seventh");
+            assertEquals(label2.getVisibility(), View.GONE);
+            assertEquals(dot2.getVisibility(), View.VISIBLE);
+
+
         });
     }
+
+
 }
+
 

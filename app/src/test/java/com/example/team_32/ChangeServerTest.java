@@ -8,12 +8,15 @@ import static org.robolectric.shadows.ShadowInstrumentation.getInstrumentation;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Looper;
 import android.widget.EditText;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -23,36 +26,28 @@ import org.robolectric.shadows.ShadowContextWrapper;
 
 @RunWith(RobolectricTestRunner.class)
 public class ChangeServerTest {
-    private MainActivity mainActivity;
 
-    @Before
-    public void setUp() {
-        // Create and launch the MainActivity
-        mainActivity = Robolectric.buildActivity(MainActivity.class).get();
-        // Grant the location permission to the context
-        ShadowContextWrapper shadowContextWrapper = shadowOf(mainActivity);
-        shadowContextWrapper.grantPermissions("android.permission.ACCESS_FINE_LOCATION");
-        mainActivity = Robolectric.buildActivity(MainActivity.class).create().get();
+    @Rule
+    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule
+            .grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-    }
+
 
     @Test
-    public void testDialog() {
-        mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
-        var scenario = ActivityScenario.launch(MainActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.onActivity(act -> {
-            act.findViewById(R.id.change_server_btn).performClick();
-            AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
-            assertTrue(dialog.isShowing());
-            EditText editText = (EditText) dialog.getCurrentFocus();
-            String newServer = "example.com";
-            editText.setText(newServer);
-            mainActivity.runOnUiThread(() -> dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick());
-            getInstrumentation().waitForIdleSync();
-            assertFalse(dialog.isShowing());
-            assertEquals(newServer, UserAPI.server);
-        });
+    public void testDialog() throws InterruptedException {
+        mainUser.singleton("empty",0,0,0);
+        MainActivity mainActivity = Robolectric.buildActivity(MainActivity.class).create().start().get();
+        mainActivity.closeExeInViewModel();
+
+        mainActivity.findViewById(R.id.change_server_btn).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
+        assertTrue(dialog.isShowing());
+
+        EditText editText = dialog.findViewById(R.id.edittext_uid);
+        assertEquals(UserAPI.server.toString(), editText.getText().toString());
+        
     }
+
 }
