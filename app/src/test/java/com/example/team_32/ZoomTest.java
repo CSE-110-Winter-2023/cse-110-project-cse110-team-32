@@ -36,7 +36,6 @@ public class ZoomTest {
         scenario.moveToState(Lifecycle.State.STARTED);
         scenario.onActivity( act -> {
             assertEquals(1, act.zoomState);
-            assertEquals(View.GONE, act.findViewById(R.id.fiveHPMileRing).getVisibility());
             assertEquals(View.GONE, act.findViewById(R.id.fiveHMileRing).getVisibility());
             assertEquals(View.VISIBLE, act.findViewById(R.id.tenMileRing).getVisibility());
             assertEquals(View.VISIBLE, act.findViewById(R.id.oneMileRing).getVisibility());
@@ -53,7 +52,6 @@ public class ZoomTest {
             act.findViewById(R.id.ZoomInBtn).performClick();
             // MOVED to one ring state (0)
             assertEquals(0, act.zoomState);
-            assertEquals(View.GONE, act.findViewById(R.id.fiveHPMileRing).getVisibility());
             assertEquals(View.GONE, act.findViewById(R.id.fiveHMileRing).getVisibility());
             assertEquals(View.GONE, act.findViewById(R.id.tenMileRing).getVisibility());
             assertEquals(View.VISIBLE, act.findViewById(R.id.oneMileRing).getVisibility());
@@ -70,26 +68,6 @@ public class ZoomTest {
             act.findViewById(R.id.ZoomOutBtn).performClick();
             // MOVED to one ring state (2)
             assertEquals(2, act.zoomState);
-            assertEquals(View.GONE, act.findViewById(R.id.fiveHPMileRing).getVisibility());
-            assertEquals(View.VISIBLE, act.findViewById(R.id.fiveHMileRing).getVisibility());
-            assertEquals(View.VISIBLE, act.findViewById(R.id.tenMileRing).getVisibility());
-            assertEquals(View.VISIBLE, act.findViewById(R.id.oneMileRing).getVisibility());
-        });
-    }
-    @Test
-    public void testFiveHPMileZoom(){
-        ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.onActivity( act -> {
-            //start with two zones
-            assertEquals(1, act.zoomState);
-            act.findViewById(R.id.ZoomOutBtn).performClick();
-            // MOVED to one ring state (2)
-            assertEquals(2, act.zoomState);
-            act.findViewById(R.id.ZoomOutBtn).performClick();
-            assertEquals(3, act.zoomState);
-            assertEquals(View.VISIBLE, act.findViewById(R.id.fiveHPMileRing).getVisibility());
             assertEquals(View.VISIBLE, act.findViewById(R.id.fiveHMileRing).getVisibility());
             assertEquals(View.VISIBLE, act.findViewById(R.id.tenMileRing).getVisibility());
             assertEquals(View.VISIBLE, act.findViewById(R.id.oneMileRing).getVisibility());
@@ -110,25 +88,11 @@ public class ZoomTest {
             assertTrue(zoomOutBtn.isClickable());
 
             // MOVED to one ring state (2)
-            //both btn clickable
-            zoomOutBtn.performClick();
-            assertEquals(2, act.zoomState);
-            assertTrue(zoomInBtn.isClickable());
-            assertTrue(zoomOutBtn.isClickable());
-
-            // MOVED to one ring state (3)
             //zoom-in btn clickable, out not
             zoomOutBtn.performClick();
-            assertEquals(3, act.zoomState);
-            assertTrue(zoomInBtn.isClickable());
-            assertFalse(zoomOutBtn.isClickable());
-
-            // MOVED to one ring state (2)
-            //both btn clickable
-            zoomInBtn.performClick();
             assertEquals(2, act.zoomState);
             assertTrue(zoomInBtn.isClickable());
-            assertTrue(zoomOutBtn.isClickable());
+            assertFalse(zoomOutBtn.isClickable());
 
             // MOVE to ring state (1)
             //both btn clickable
