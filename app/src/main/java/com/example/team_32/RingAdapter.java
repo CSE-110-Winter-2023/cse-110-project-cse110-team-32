@@ -51,6 +51,7 @@ public class RingAdapter extends ArrayAdapter<User> {
     }
 
     public void setZoomState(int zoomState) {
+        System.out.println("OverLap"+ "setZoomState: " + zoomState);
         Log.i("OverLap", "setZoomState: " + zoomState);
         this.zoomState = zoomState;
         notifyDataSetChanged();
@@ -95,7 +96,7 @@ public class RingAdapter extends ArrayAdapter<User> {
         float len = Utilities.lenOfVector(vector);
         x /= len;
         y /= len;
-
+        System.out.println("Place: " + usr.label + "dist: " + dist + " state: " +zoomState+"\n");
         Log.i("Pos2", usr.label + " : " + x + ", " + y + "dist:" + dist + "\n" + usr.toJSON());
         // Create the view if needed
         View itemView = convertView;
@@ -177,6 +178,7 @@ public class RingAdapter extends ArrayAdapter<User> {
                 }
             }
         } else if (zoomState == 2) {
+            System.out.println("State 2");
             // state 2: 1, 10, 500 miles rings
             // outRing: 950/2, inRing = 750/2, innerRing = 350
             Log.i("ZOOM", "State 2");
@@ -185,6 +187,7 @@ public class RingAdapter extends ArrayAdapter<User> {
             float radInner = 350.0F / 2.0F;
             float radOff = 50F;
             if (dist > zoomLvls[2]) {
+                System.out.println("ring ?");
                 Log.i("ZOOM", "State 2: Outer");
                 //displayed on edge of the outer ring as a dot only.
                 label.setVisibility(View.GONE);
@@ -192,6 +195,7 @@ public class RingAdapter extends ArrayAdapter<User> {
                 x *= radOuter;
                 y *= radOuter;
             } else {
+                System.out.println("none ring");
                 Log.i("ZOOM", "State 1: Inner");
                 // displayed within the rings
                 label.setVisibility(View.VISIBLE);
@@ -226,12 +230,14 @@ public class RingAdapter extends ArrayAdapter<User> {
                 }
             }
         } else if (zoomState == 3) {
+            System.out.println("state 3");
             float radOuterer =  1000.0F / 2.0F;
             float radOuter = 850.0F / 2.0F;
             float radIn = 650.0F / 2.0F;
             float radInner = 350.0F / 2.0F;
             float radOff = 50F;
             if (dist > zoomLvls[2]) {
+                System.out.println("showen ?");
                 //500+
                 Log.i("ZOOM", "State 2: Outer");
                 //displayed on edge of the outer ring as a dot only.
