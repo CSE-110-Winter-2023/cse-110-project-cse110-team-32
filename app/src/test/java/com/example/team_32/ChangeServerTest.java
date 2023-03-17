@@ -47,12 +47,20 @@ public class ChangeServerTest {
             AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
             assertTrue(dialog.isShowing());
             EditText editText = (EditText) dialog.getCurrentFocus();
+            System.out.println(editText.getText());
             String newServer = "example.com";
             editText.setText(newServer);
-            mainActivity.runOnUiThread(() -> dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick());
+            System.out.println(editText.getText());
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+            act.runOnUiThread(() -> {
+                System.out.println("Click?" + dialog.getButton(DialogInterface.BUTTON_POSITIVE));
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+                System.out.println("Clicked");
+            });
             getInstrumentation().waitForIdleSync();
             assertFalse(dialog.isShowing());
             assertEquals(newServer, UserAPI.server);
         });
+
     }
 }

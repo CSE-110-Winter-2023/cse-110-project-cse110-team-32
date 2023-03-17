@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChangeServerClicked(View view) {
+        System.out.println("In the Change");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Change Server");
         final EditText server = new EditText(this);
@@ -217,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(server);
         server.setText(UserAPI.server);
         builder.setPositiveButton("confirm", (dialog, which) -> {
+            System.out.println("Server"+ "change server to: " +"Clicked for real ?");
             String newServer = server.getText().toString();
             UserAPI.server = newServer;
             SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
@@ -224,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("server", newServer);
             editor.apply();
             Log.i("Server", "change server to: " + newServer);
+            System.out.println("Server"+ "change server to: " + newServer);
         });
         builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
         builder.show();
