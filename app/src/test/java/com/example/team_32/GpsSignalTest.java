@@ -59,17 +59,18 @@ public class GpsSignalTest {
     }
     @Test
     public void testWithGPS(){
-        mainUser.resetMain();
         testMainUser = mainUser.singleton("testMainUser", 32.88006F, -117.23402F, System.currentTimeMillis()/1000);
         ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
         scenario.moveToState(Lifecycle.State.CREATED);
         scenario.moveToState(Lifecycle.State.STARTED);
         scenario.onActivity( act -> {
-            act.viewModel.resetMainUser();
+
             ImageView gpsDot  = act.findViewById(R.id.gpsIndicator);
             TextView gpsLabel  = act.findViewById(R.id.GPS_time);
+
             //Checking Color
             assertEquals("",gpsLabel.getText());
+
             assertEquals(((PorterDuffColorFilter)gpsDot.getColorFilter()), new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.ADD));
             act.viewModel.closeExe();
 //            act.getMainLooper().quitSafely();
