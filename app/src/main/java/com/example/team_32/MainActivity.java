@@ -248,11 +248,11 @@ public class MainActivity extends AppCompatActivity {
         setZoomState(zoomState);
     }
     public void onZoomOutClicked(View view){
-        if (zoomState == 2)
+        if (zoomState == 3)
             return;
         zoomState++;
         findViewById(R.id.ZoomInBtn).setClickable(true);
-        if (zoomState == 2){
+        if (zoomState == 3){
             findViewById(R.id.ZoomOutBtn).setClickable(false);
         }
         setZoomState(zoomState);
@@ -265,7 +265,8 @@ public class MainActivity extends AppCompatActivity {
     private void setZoomState(int zoomState) {
         Log.i("Setting ZoomState", String.valueOf(zoomState));
         if (zoomState == 0){
-            // only 1 mile ring
+            // only 1 mile ring only
+            fiveHPMileRing.setVisibility(View.GONE);
             fiveHMileRing.setVisibility(View.GONE);
             tenMileRing.setVisibility(View.GONE);
             ////////////////////
@@ -275,6 +276,8 @@ public class MainActivity extends AppCompatActivity {
             ///////////////////
             oneMileRing.setLayoutParams(nineFivePxPara);
         } else if (zoomState == 1) {
+            // 1, 10 mile rings
+            fiveHPMileRing.setVisibility(View.GONE);
             fiveHMileRing.setVisibility(View.GONE);
             tenMileRing.setVisibility(View.VISIBLE);
             /////////////////////
@@ -289,7 +292,9 @@ public class MainActivity extends AppCompatActivity {
             tenMileRing.setLayoutParams(ninePxPara);
             Log.i("LayOut", tenMileRing.getMeasuredWidth() + " " + tenMileRing.getMeasuredHeight() + " " + tenMileRing.getX() + " ," + tenMileRing.getY());
             oneMileRing.setLayoutParams(fourFivePxPara);
-        }else {
+        }else if (zoomState == 2){
+            // 1, 10, 500 rings
+            fiveHPMileRing.setVisibility(View.GONE);
             fiveHMileRing.setVisibility(View.VISIBLE);
             tenMileRing.setVisibility(View.VISIBLE);
             /////////////////////
@@ -303,6 +308,29 @@ public class MainActivity extends AppCompatActivity {
             fourFivePxPara.width = 350;
             fourFivePxPara.height = 350;
             /////////////////////
+            fiveHMileRing.setLayoutParams(nineFivePxPara);
+            tenMileRing.setLayoutParams(sevenFivePxPara);
+            oneMileRing.setLayoutParams(fourFivePxPara);
+        }else {
+            // 1, 10, 500, 500+ rings
+            fiveHPMileRing.setVisibility(View.VISIBLE);
+            fiveHMileRing.setVisibility(View.VISIBLE);
+            tenMileRing.setVisibility(View.VISIBLE);
+            /////////////////////
+            ViewGroup.LayoutParams tenPxPara = fiveHPMileRing.getLayoutParams();
+            tenPxPara.width = 1000;
+            tenPxPara.height = 1000;
+            ViewGroup.LayoutParams nineFivePxPara = fiveHMileRing.getLayoutParams();
+            nineFivePxPara.width = 850;
+            nineFivePxPara.height = 850;
+            ViewGroup.LayoutParams sevenFivePxPara = tenMileRing.getLayoutParams();
+            sevenFivePxPara.width = 650;
+            sevenFivePxPara.height = 650;
+            ViewGroup.LayoutParams fourFivePxPara = oneMileRing.getLayoutParams();
+            fourFivePxPara.width = 350;
+            fourFivePxPara.height = 350;
+            /////////////////////
+            fiveHPMileRing.setLayoutParams(tenPxPara);
             fiveHMileRing.setLayoutParams(nineFivePxPara);
             tenMileRing.setLayoutParams(sevenFivePxPara);
             oneMileRing.setLayoutParams(fourFivePxPara);

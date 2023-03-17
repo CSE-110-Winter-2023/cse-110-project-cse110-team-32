@@ -118,6 +118,7 @@ public class RingAdapter extends ArrayAdapter<User> {
         if (zoomState == 0) {
             Log.i("ZOOM", "State 0");
             float rad = 950F / 2F;
+            float radOff= 50F;
             if (dist > zoomLvls[0]) {
                 label.setVisibility(View.GONE);
                 dot.setVisibility(View.VISIBLE);
@@ -127,13 +128,13 @@ public class RingAdapter extends ArrayAdapter<User> {
             } else {
                 label.setVisibility(View.VISIBLE);
                 dot.setVisibility(View.GONE);
-                x *= rad * (dist / 1.0);
-                y *= rad * (dist / 1.0);
+                var tempX = radOff * x;
+                var tempY = radOff * y;
+                x *= (rad -radOff) * (dist / 1.0);
+                y *= (rad- radOff) * (dist / 1.0);
+                x += tempX;
+                y+= tempY;
             }
-
-//            itemView.setX(xOffset+x);
-//            itemView.setY(yOffset+y);
-//            return itemView;
         } else if (zoomState == 1) {
             // state 1: 1,10 miles rings
             // outer ring radius = 900
@@ -141,6 +142,7 @@ public class RingAdapter extends ArrayAdapter<User> {
             Log.i("ZOOM", "State 1");
             float radOuter = 900.0F / 2.0F;
             float radInner = 450.0F / 2.0F;
+            float radOff = 50F;
             if (dist > zoomLvls[1]) {
                 Log.i("ZOOM", "State 1: Outer");
                 //displayed on edge of the outer ring as a dot only.
@@ -156,8 +158,12 @@ public class RingAdapter extends ArrayAdapter<User> {
                 // between 0-1
                 if (dist < zoomLvls[0]) {
                     Log.i("ZOOM", "State 1: Inner 0-1");
-                    x *= (radInner) * (dist / 1.0);
-                    y *= (radInner) * (dist / 1.0);
+                    var tempX = radOff * x;
+                    var tempY = radOff * y;
+                    x *= (radInner -radOff) * (dist / 1.0);
+                    y *= (radInner- radOff) * (dist / 1.0);
+                    x += tempX;
+                    y+= tempY;
                 } else {
                     // move it to the edge of the inner ring
                     var tempX = radInner * x;
@@ -170,9 +176,6 @@ public class RingAdapter extends ArrayAdapter<User> {
 
                 }
             }
-//            itemView.setX(xOffset+x);
-//            itemView.setY(yOffset+y);
-//            return itemView;
         } else if (zoomState == 2) {
             // state 2: 1, 10, 500 miles rings
             // outRing: 950/2, inRing = 750/2, innerRing = 350
@@ -180,6 +183,7 @@ public class RingAdapter extends ArrayAdapter<User> {
             float radOuter = 950.0F / 2.0F;
             float radIn = 750.0F / 2.0F;
             float radInner = 350.0F / 2.0F;
+            float radOff = 50F;
             if (dist > zoomLvls[2]) {
                 Log.i("ZOOM", "State 2: Outer");
                 //displayed on edge of the outer ring as a dot only.
@@ -195,8 +199,12 @@ public class RingAdapter extends ArrayAdapter<User> {
                 // between 0-1
                 if (dist < zoomLvls[0]) {
                     Log.i("ZOOM", "State 2: Inner 0-1");
-                    x *= (radInner) * (dist / 1.0);
-                    y *= (radInner) * (dist / 1.0);
+                    var tempX = radOff * x;
+                    var tempY = radOff * y;
+                    x *= (radInner -radOff) * (dist / 1.0);
+                    y *= (radInner- radOff) * (dist / 1.0);
+                    x += tempX;
+                    y+= tempY;
                 } else if (dist < zoomLvls[1]) {
                     Log.i("ZOOM", "State 2: Inner 1-10");
                     // between 1-10
@@ -211,8 +219,56 @@ public class RingAdapter extends ArrayAdapter<User> {
                     //between 10-500
                     var tempX = radIn * x;
                     var tempY = radIn * y;
-                    x *= ((radIn - radIn) * dist / 500.0F);
-                    y *= ((radIn - radIn) * dist / 500.0F);
+                    x *= ((radOuter - radIn) * dist / 500.0F);
+                    y *= ((radOuter - radIn) * dist / 500.0F);
+                    x += tempX;
+                    y += tempY;
+                }
+            }
+        } else if (zoomState == 3) {
+            float radOuterer =  1000.0F / 2.0F;
+            float radOuter = 850.0F / 2.0F;
+            float radIn = 650.0F / 2.0F;
+            float radInner = 350.0F / 2.0F;
+            float radOff = 50F;
+            if (dist > zoomLvls[2]) {
+                //500+
+                Log.i("ZOOM", "State 2: Outer");
+                //displayed on edge of the outer ring as a dot only.
+                label.setVisibility(View.VISIBLE);
+                dot.setVisibility(View.GONE);
+                x *= (radOuter + radOuterer)/2;
+                y *= (radOuter + radOuterer)/2;
+            } else {
+                Log.i("ZOOM", "State 1: Inner");
+                // displayed within the rings
+                label.setVisibility(View.VISIBLE);
+                dot.setVisibility(View.GONE);
+                // between 0-1
+                if (dist < zoomLvls[0]) {
+                    Log.i("ZOOM", "State 2: Inner 0-1");
+                    var tempX = radOff * x;
+                    var tempY = radOff * y;
+                    x *= (radInner -radOff) * (dist / 1.0);
+                    y *= (radInner- radOff) * (dist / 1.0);
+                    x += tempX;
+                    y+= tempY;
+                } else if (dist < zoomLvls[1]) {
+                    Log.i("ZOOM", "State 2: Inner 1-10");
+                    // between 1-10
+                    // move it to the edge of the inner ring
+                    var tempX = radInner * x;
+                    var tempY = radInner * y;
+                    x *= ((radIn - radInner) * dist / 10.0F);
+                    y *= ((radIn - radInner) * dist / 10.0F);
+                    x += tempX;
+                    y += tempY;
+                } else {
+                    //between 10-500
+                    var tempX = radIn * x;
+                    var tempY = radIn * y;
+                    x *= ((radOuter - radIn) * dist / 500.0F);
+                    y *= ((radOuter - radIn) * dist / 500.0F);
                     x += tempX;
                     y += tempY;
                 }
@@ -246,6 +302,11 @@ public class RingAdapter extends ArrayAdapter<User> {
                             //going down
                             x += minDistance / 2;
                             y += minDistance / 2;
+                                if (x + xOffset <= (50.0F / 2.0F)|| y + yOffset <= (50.0F / 2.0F)){
+                                    Log.i("Reverse", "-- ");
+                                    x -= minDistance;
+                                    y -= minDistance;
+                                }
                         } else {
                             //going up
                             x -= minDistance / 2;
@@ -257,7 +318,6 @@ public class RingAdapter extends ArrayAdapter<User> {
                             }
                         }
                     } else if (zoomState == 1 && dist <= zoomLvls[1]) {
-
                         minDistance *= 0.8;
                         if (i % 2 == 0) {
                             //going down
@@ -310,6 +370,63 @@ public class RingAdapter extends ArrayAdapter<User> {
                             x -= minDistance / 2;
                             y -= minDistance / 2;
                             if (dist > 10){
+                                if (x + xOffset >= (950.0F / 2.0F)|| y + yOffset >= (950.0F / 2.0F)){
+                                    //go down
+                                    x += minDistance;
+                                    y += minDistance;
+                                }
+                            }else if (dist > 1){
+                                if (x + xOffset >= (750.0F / 2.0F)|| y + yOffset >= (750.0F / 2.0F)){
+                                    //go down
+                                    x += minDistance;
+                                    y += minDistance;
+                                }
+                            }else {
+                                if (x + xOffset >= (350.0F / 2.0F)|| y + yOffset >= (350.0F / 2.0F)){
+                                    //go down
+                                    x += minDistance;
+                                    y += minDistance;
+                                }
+                            }
+                        }
+                    } else if (zoomState == 3) {
+                        minDistance = 30;
+                        if (i % 2 == 0) {
+                            //going down
+                            x += minDistance / 2;
+                            y += minDistance / 2;
+                            if (dist > 500){
+                                if (x + xOffset <= (850.0F / 2.0F)|| y + yOffset <= (850.0F / 2.0F)){
+                                    //go up
+                                    x -= minDistance;
+                                    y -= minDistance;
+                                }
+                            }
+                            else if (dist > 10){
+                                if (x + xOffset <= (650.0F / 2.0F)|| y + yOffset <= (650.0F / 2.0F)){
+                                    //go up
+                                    x -= minDistance;
+                                    y -= minDistance;
+                                }
+                            }else if (dist > 1){
+                                if (x + xOffset <= (350.0F / 2.0F)|| y + yOffset <= (350.0F / 2.0F)){
+                                    //go up
+                                    x -= minDistance;
+                                    y -= minDistance;
+                                }
+                            }
+                        } else {
+                            //going up
+                            x -= minDistance / 2;
+                            y -= minDistance / 2;
+                            if (dist > 500){
+                                if (x + xOffset >= (1000.0F / 2.0F)|| y + yOffset >= (1000.0F / 2.0F)){
+                                    //go up
+                                    x += minDistance;
+                                    y += minDistance;
+                                }
+                            }
+                            else if (dist > 10){
                                 if (x + xOffset >= (950.0F / 2.0F)|| y + yOffset >= (950.0F / 2.0F)){
                                     //go down
                                     x += minDistance;
