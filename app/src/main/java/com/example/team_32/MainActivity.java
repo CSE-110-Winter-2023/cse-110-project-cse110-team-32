@@ -1,15 +1,11 @@
 package com.example.team_32;
 
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,18 +30,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
-    private final ActivityResultLauncher<Intent> secondActivityLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    String resultData = result.getData().getStringExtra("result_key");
-                    Log.d("MainActivity", "Result: " + resultData);
-                    mainUser.singleton(resultData, 0, 0, 0);
-                    // Process the result data, e.g., update UI
-                    saveMainUser();
-                    loadMainUser();
-                }
-            });
     public int zoomState;
     private OrientationService orientationService;
     private LocationService locationService;
@@ -53,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView oneMileRing;
     private ImageView tenMileRing;
     private ImageView fiveHMileRing;
-    private ImageView fiveHPMileRing;
     public RingAdapter ringAdapter;
     public ListView ringView;
 
@@ -69,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         oneMileRing = findViewById(R.id.oneMileRing);
         tenMileRing = findViewById(R.id.tenMileRing);
         fiveHMileRing = findViewById(R.id.fiveHMileRing);
-        fiveHPMileRing = findViewById(R.id.fiveHPMileRing);
 
         Log.i("ZOOM", "SETTING " + zoomState);
         zoomState = 1;
@@ -78,17 +60,17 @@ public class MainActivity extends AppCompatActivity {
         setupServer();
         viewModel = setUpViewModel();
         loadMainUser();
-
         if (!mainUser.exists()) {
-            Intent intent = new Intent(MainActivity.this, UsernameActivity.class);
-            secondActivityLauncher.launch(intent);
+            Log.i("nameActivity", "Went there ? ");
+            Intent userNameAct = new Intent(this, UsernameActivity.class);
+            startActivity(userNameAct);
         }
 
         orientationService = OrientationService.singleton(this);
         setUpOri();
         viewModel.setUpGPSloss(this);
         ringView = findViewById(R.id.listView1);
-        ringAdapter =  RingAdapter.singleton(this);
+        ringAdapter = new RingAdapter(this);
         ringView.setAdapter(ringAdapter);
         viewModel.getUsers().observe(this, ringAdapter::setUsers);
         ringAdapter.notifyDataSetChanged();
@@ -156,10 +138,6 @@ public class MainActivity extends AppCompatActivity {
             viewModel.reSyncAll();
         }
         orientationService.regSensorListeners();
-        if (ringAdapter == null){
-            ringAdapter = RingAdapter.singleton(this);
-        }
-        ringAdapter.notifyDataSetChanged();
 //        loadZoomState();
 //        setZoomState(zoomState);
     }
@@ -172,15 +150,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMainUser() {
+        if (mainUser.exists())
+            return;
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         public_code = preferences.getString("public_code", "");
         TextView uidLabel = findViewById(R.id.UIDlable);
         uidLabel.setText("UID: " + public_code);
         if (public_code != null && !public_code.isEmpty()) {
+            System.out.println("HERE!!" + mainUser.exists());
             Log.i("CODE", "loadMainUser: " + public_code);
             viewModel.loadMainUser(public_code);
         }
-
     }
     private void saveZoomState(){
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
@@ -211,17 +191,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChangeServerClicked(View view) {
-        System.out.println("In the Change");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Change Server");
         final EditText server = new EditText(this);
         server.setHint("Server");
-        server.setId(R.id.edittext_uid);
         server.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(server);
         server.setText(UserAPI.server);
         builder.setPositiveButton("confirm", (dialog, which) -> {
-            System.out.println("Server"+ "change server to: " +"Clicked for real ?");
             String newServer = server.getText().toString();
             UserAPI.server = newServer;
             SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
@@ -229,14 +206,15 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("server", newServer);
             editor.apply();
             Log.i("Server", "change server to: " + newServer);
-            System.out.println("Server"+ "change server to: " + newServer);
         });
         builder.setNegativeButton("cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
 
-
+    // state 0: only the 1 mile rings
+    // state 1: 1,10 miles rings
+    // state 2: 1, 10, 500 miles rings
     public void onZoomInClicked(View view){
         if (zoomState == 0)
             return;
@@ -248,25 +226,19 @@ public class MainActivity extends AppCompatActivity {
         setZoomState(zoomState);
     }
     public void onZoomOutClicked(View view){
-        if (zoomState == 3)
+        if (zoomState == 2)
             return;
         zoomState++;
         findViewById(R.id.ZoomInBtn).setClickable(true);
-        if (zoomState == 3){
+        if (zoomState == 2){
             findViewById(R.id.ZoomOutBtn).setClickable(false);
         }
         setZoomState(zoomState);
     }
-
-    // state 0: only the 1 mile rings
-    // state 1: 1, 10 miles rings
-    // state 2: 1, 10, 500 miles rings
-    // state 3: 1, 10, 500, 500+ miles rings
     private void setZoomState(int zoomState) {
         Log.i("Setting ZoomState", String.valueOf(zoomState));
         if (zoomState == 0){
-            // only 1 mile ring only
-            fiveHPMileRing.setVisibility(View.GONE);
+            // only 1 mile ring
             fiveHMileRing.setVisibility(View.GONE);
             tenMileRing.setVisibility(View.GONE);
             ////////////////////
@@ -276,8 +248,6 @@ public class MainActivity extends AppCompatActivity {
             ///////////////////
             oneMileRing.setLayoutParams(nineFivePxPara);
         } else if (zoomState == 1) {
-            // 1, 10 mile rings
-            fiveHPMileRing.setVisibility(View.GONE);
             fiveHMileRing.setVisibility(View.GONE);
             tenMileRing.setVisibility(View.VISIBLE);
             /////////////////////
@@ -292,9 +262,7 @@ public class MainActivity extends AppCompatActivity {
             tenMileRing.setLayoutParams(ninePxPara);
             Log.i("LayOut", tenMileRing.getMeasuredWidth() + " " + tenMileRing.getMeasuredHeight() + " " + tenMileRing.getX() + " ," + tenMileRing.getY());
             oneMileRing.setLayoutParams(fourFivePxPara);
-        }else if (zoomState == 2){
-            // 1, 10, 500 rings
-            fiveHPMileRing.setVisibility(View.GONE);
+        }else {
             fiveHMileRing.setVisibility(View.VISIBLE);
             tenMileRing.setVisibility(View.VISIBLE);
             /////////////////////
@@ -311,29 +279,6 @@ public class MainActivity extends AppCompatActivity {
             fiveHMileRing.setLayoutParams(nineFivePxPara);
             tenMileRing.setLayoutParams(sevenFivePxPara);
             oneMileRing.setLayoutParams(fourFivePxPara);
-        }else {
-            // 1, 10, 500, 500+ rings
-            fiveHPMileRing.setVisibility(View.VISIBLE);
-            fiveHMileRing.setVisibility(View.VISIBLE);
-            tenMileRing.setVisibility(View.VISIBLE);
-            /////////////////////
-            ViewGroup.LayoutParams tenPxPara = fiveHPMileRing.getLayoutParams();
-            tenPxPara.width = 1000;
-            tenPxPara.height = 1000;
-            ViewGroup.LayoutParams nineFivePxPara = fiveHMileRing.getLayoutParams();
-            nineFivePxPara.width = 850;
-            nineFivePxPara.height = 850;
-            ViewGroup.LayoutParams sevenFivePxPara = tenMileRing.getLayoutParams();
-            sevenFivePxPara.width = 650;
-            sevenFivePxPara.height = 650;
-            ViewGroup.LayoutParams fourFivePxPara = oneMileRing.getLayoutParams();
-            fourFivePxPara.width = 350;
-            fourFivePxPara.height = 350;
-            /////////////////////
-            fiveHPMileRing.setLayoutParams(tenPxPara);
-            fiveHMileRing.setLayoutParams(nineFivePxPara);
-            tenMileRing.setLayoutParams(sevenFivePxPara);
-            oneMileRing.setLayoutParams(fourFivePxPara);
         }
         if (ringAdapter != null)
             ringAdapter.setZoomState(zoomState);
@@ -347,14 +292,4 @@ public class MainActivity extends AppCompatActivity {
             UserAPI.server = server;
         }
     }
-
-    @VisibleForTesting
-    public void closeExeInViewModel(){
-    viewModel.closeExe();
-    }
-    @VisibleForTesting
-    public void resetMainViewModel(){
-        viewModel.resetMainUser();
-    }
-
 }

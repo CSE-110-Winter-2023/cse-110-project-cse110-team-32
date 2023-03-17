@@ -142,10 +142,10 @@
         android:id="@+id/ringConst"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -154,8 +154,8 @@
 
         <ImageView
             android:id="@+id/oneMileRing"
-            android:layout_width="350px"
-            android:layout_height="350px"
+            android:layout_width="450px"
+            android:layout_height="450px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -164,8 +164,8 @@
 
         <ImageView
             android:id="@+id/tenMileRing"
-            android:layout_width="650px"
-            android:layout_height="650px"
+            android:layout_width="750px"
+            android:layout_height="750px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -174,18 +174,8 @@
 
         <ImageView
             android:id="@+id/fiveHMileRing"
-            android:layout_width="850px"
-            android:layout_height="850px"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/circle_shape" />
-
-        <ImageView
-            android:id="@+id/fiveHPMileRing"
-            android:layout_width="1000px"
-            android:layout_height="1000px"
+            android:layout_width="950px"
+            android:layout_height="950px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

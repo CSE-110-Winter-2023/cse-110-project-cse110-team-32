@@ -7,7 +7,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constID"
-        android:layout_width="80dp"
+        android:layout_width="100dp"
         android:layout_height="30dp"
         android:maxWidth="100dp"
         android:minWidth="100dp"
@@ -21,9 +21,9 @@
             android:id="@+id/usr_dot"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="35dp"
+            android:layout_marginStart="45dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="35dp"
+            android:layout_marginEnd="45dp"
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +44,6 @@
             android:singleLine="true"
             android:text="TextView"
             android:textAlignment="center"
-            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
