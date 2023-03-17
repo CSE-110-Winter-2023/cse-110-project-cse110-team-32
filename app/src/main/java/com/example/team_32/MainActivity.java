@@ -1,11 +1,14 @@
 package com.example.team_32;
 
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +33,19 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE = 1;
+    private final ActivityResultLauncher<Intent> secondActivityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    String resultData = result.getData().getStringExtra("result_key");
+                    Log.d("MainActivity", "Result: " + resultData);
+                    mainUser.singleton(resultData, 0, 0, 0);
+                    // Process the result data, e.g., update UI
+                    saveMainUser();
+                    loadMainUser();
+                }
+            });
     public int zoomState;
     private OrientationService orientationService;
     private LocationService locationService;
@@ -60,17 +76,17 @@ public class MainActivity extends AppCompatActivity {
         setupServer();
         viewModel = setUpViewModel();
         loadMainUser();
+
         if (!mainUser.exists()) {
-            Log.i("nameActivity", "Went there ? ");
-            Intent userNameAct = new Intent(this, UsernameActivity.class);
-            startActivity(userNameAct);
+            Intent intent = new Intent(MainActivity.this, UsernameActivity.class);
+            secondActivityLauncher.launch(intent);
         }
 
         orientationService = OrientationService.singleton(this);
         setUpOri();
         viewModel.setUpGPSloss(this);
         ringView = findViewById(R.id.listView1);
-        ringAdapter = new RingAdapter(this);
+        ringAdapter =  RingAdapter.singleton(this);
         ringView.setAdapter(ringAdapter);
         viewModel.getUsers().observe(this, ringAdapter::setUsers);
         ringAdapter.notifyDataSetChanged();
@@ -138,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
             viewModel.reSyncAll();
         }
         orientationService.regSensorListeners();
+        if (ringAdapter == null){
+            ringAdapter = RingAdapter.singleton(this);
+        }
+        ringAdapter.notifyDataSetChanged();
 //        loadZoomState();
 //        setZoomState(zoomState);
     }
@@ -150,17 +170,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMainUser() {
-        if (mainUser.exists())
-            return;
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         public_code = preferences.getString("public_code", "");
         TextView uidLabel = findViewById(R.id.UIDlable);
         uidLabel.setText("UID: " + public_code);
         if (public_code != null && !public_code.isEmpty()) {
-            System.out.println("HERE!!" + mainUser.exists());
             Log.i("CODE", "loadMainUser: " + public_code);
             viewModel.loadMainUser(public_code);
         }
+
     }
     private void saveZoomState(){
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
@@ -292,4 +310,5 @@ public class MainActivity extends AppCompatActivity {
             UserAPI.server = server;
         }
     }
+
 }
