@@ -86,23 +86,13 @@ public class RingAdapter extends ArrayAdapter<User> {
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.uesr_item, parent, false);
         }
-        //
         TextView label = itemView.findViewById(R.id.usr_label);
         label.setText(usr.label);
         ImageView dot = itemView.findViewById(R.id.usr_dot);
+        float xOffset = (float) ((parent.getWidth() - itemView.getWidth()) / 2);
+        float yOffset = (float) ((parent.getHeight() - itemView.getHeight()) / 2);
+        Log.i("ZOOM", usr.label + " in " + dist + "\n" + usr.toJSON());
 
-        float xOffset = (float) ((parent.getWidth()- itemView.getWidth())/2);
-        float yOffset = (float) ((parent.getHeight()-itemView.getHeight())/2);
-
-        Log.i("ZOOM", usr.label + " in " + dist + "\n"+ usr.toJSON());
-        // mainUser Case:
-        if ((usr.public_code + "_private2").equals(mainuser.private_code)) {
-            label.setVisibility(View.GONE);
-            dot.setVisibility(View.VISIBLE);
-            itemView.setX(0);
-            itemView.setY(yOffset);
-            return itemView;
-        }
 
         // based on the distance and zoom state populate the correct layOut
         // state 0: only the 1 mile rings
